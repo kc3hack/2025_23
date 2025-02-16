@@ -1,0 +1,35 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+datasource db {
+  provider = "mysql"
+  url      = "mysql://root:example@mysql:3306/app_db"
+}
+
+model User {
+  id        Int        @id @default(autoincrement())
+  name      String
+  email     String     @unique
+  favorites Favorite[]
+  chats     Chat[]
+}
+
+model Favorite {
+  id     Int    @id @default(autoincrement())
+  favo1  String
+  favo2  String
+  favo3  String
+  favo4  String
+  userId Int
+  user   User   @relation(fields: [userId], references: [id])
+}
+
+model Chat {
+  id        Int    @id @default(autoincrement())
+  message   String
+  messanger String
+  userId    Int
+  user      User   @relation(fields: [userId], references: [id])
+}
