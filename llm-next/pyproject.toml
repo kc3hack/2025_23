@@ -1,11 +1,14 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
 [project]
-name = "llm-db"
-version = "0.1.0"
+name = "llm-next"
+version = "0.0.1"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.9"
 dependencies = [
-    "chromadb>=0.6.3",
     "cohere>=5.13.12",
     "langchain>=0.3.18",
     "langchain-community>=0.3.17",
@@ -20,3 +23,26 @@ dependencies = [
     "psycopg>=3.2.4",
     "sentence-transformers>=3.4.1",
 ]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: Implementation :: CPython",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["llm_next"]
+
+[tool.hatch.envs.test]
+dependencies = ["coverage[toml]>=6.5", "pytest"]
+
+[[tool.hatch.envs.test.matrix]]
+python = ["3.9", "3.10", "3.11"]
+
+[tool.ruff]
+extend-select = ["I"]
+
+[tool.ruff.lint.isort]
+lines-after-imports = 2
