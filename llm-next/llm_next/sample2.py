@@ -109,10 +109,12 @@ def chat_with_history(query: str):
 
     answer = rag_chain_with_source.invoke({"context": ctx, "question": query})
     print(answer)
-    chat_history.add_messages([
-        HumanMessage(content=query),
-        AIMessage(content=answer),
-    ])
+    chat_history.add_messages(
+        [
+            HumanMessage(content=query),
+            AIMessage(content=answer),
+        ]
+    )
     return answer
 
 
