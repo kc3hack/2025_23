@@ -7,12 +7,24 @@ import psycopg
 
 from langchain.callbacks.manager import CallbackManager
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
-from langchain.embeddings import HuggingFaceEmbeddings
+from langchain.schema.output_parser import StrOutputParser
+from langchain_core.prompts import ChatPromptTemplate
+
+# RAG用
+from langchain.schema.runnable import RunnableParallel, RunnablePassthrough
 from langchain.vectorstores import PGVector
 from langchain_postgres import PostgresChatMessageHistory
 from langchain_postgres.chat_message_histories import _create_table_and_index
 from langchain.chains import RetrievalQA
+
+# LocalLLM用
 from langchain_community.llms.llamacpp import LlamaCpp
+from langchain.embeddings import HuggingFaceEmbeddings
+
+# Gemini用
+from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
+from langchain_google_vertexai import VertexAI
+
 
 # 環境変数の読み込み
 load_dotenv()
@@ -22,9 +34,12 @@ PG_USER = os.getenv("PG_USER", "postgres")
 PG_PASSWORD = os.getenv("PG_PASSWORD", "password")
 PG_DATABASE = os.getenv("PG_DATABASE", "postgres")
 DATABASE_URL = f"postgresql+psycopg2://{PG_USER}:{PG_PASSWORD}@{PG_HOST}:{PG_PORT}/{PG_DATABASE}"
+GEMINI_API_KEY = os.getenv("GOOGLE_API_KEY", "DEADC0DE")
 
 # Embeddingsモデルの初期化
-embeddings = HuggingFaceEmbeddings(model_name="intfloat/multilingual-e5-large")
+#embeddings = HuggingFaceEmbeddings(model_name="intfloat/multilingual-e5-large")
+embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
+
 
 # Callback Managerの初期化
 callback_manager = CallbackManager([StreamingStdOutCallbackHandler()])
@@ -43,7 +58,9 @@ def load_model(model_path):
     return llm
 
 # LLMモデルのロード
-chat = load_model("../../models/Meta-Llama-3-8B-Instruct-Q4_K_M.gguf")
+#chat = load_model("../../models/Meta-Llama-3-8B-Instruct-Q4_K_M.gguf")
+#chat = VertexAI(model_name="gemini-1.5-flash-001", temperature=0, google_api_key=GEMINI_API_KEY)
+chat = ChatGoogleGenerativeAI(model="gemini-1.5-flash-001")
 
 # PostgreSQLに接続
 try:
@@ -58,16 +75,46 @@ except Exception as e:
     print(f"PSQLへの接続エラー: {e}")
     sys.exit(1)
 
+prompt = ChatPromptTemplate.from_template(
+    """
+    以下のcontextだけに基づいて回答してください。
+    {context}
+    
+    質問: 
+    {question}
+    """
+)
+output_parser = StrOutputParser()
+
 
 def chat_with_history(query: str):
     """チャット履歴を検索し、回答を生成する"""
-    retriever = db.as_retriever(search_kwargs={"k": 2})  # 検索結果の上位2件を取得
-    qa = RetrievalQA.from_chain_type(llm=chat, chain_type="stuff", retriever=retriever)
-    answer = qa.run(query)
-    history.add_user_message(query)
+    # ユーザの発言をベクトル化してDBに保存
+    db.add_texts([query], metadatas=[{"role": "user"}])
+
+    # ベクトル検索で関連する会話履歴を取得
+    docs = db.similarity_search(query, k=3)  # kは取得する履歴の数
+    return docs
+
+    rag_chain_with_source = (
+        {"context": docs, "question": RunnablePassthrough()}
+        | prompt
+        | chat
+        | output_parser
+    )
+    
+    answer = rag_chain_with_source.invoke(query)
+    print(answer)
+    return answer
+
+    # AIの回答をベクトル化してDBに保存
+    #db.add_texts([answer], metadatas=[{"role": "ai"}])
+
+    #answer = qa.run(query)
+    #history.add_user_message(query)
     #history.add_ai_message(answer)
 
-    return answer
+    #return rag_chain_with_source.invoke(query)
 
 session_id = sys.argv[1]
 if not session_id:
