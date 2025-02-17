@@ -1,9 +1,9 @@
 import os
 import sys
-import psycopg
 
+import psycopg
 from dotenv import load_dotenv
-import os
+
 
 load_dotenv()
 
@@ -15,30 +15,30 @@ PG_DATABASE = os.getenv("PG_DATABASE", "postgres")
 
 
 def get_database_url():
-    """データベース接続用のURLを返す"""
-    return f"postgresql+psycopg://{PG_USER}:{PG_PASSWORD}@{PG_HOST}:{PG_PORT}/{PG_DATABASE}"
+	"""データベース接続用のURLを返す"""
+	return f"postgresql+psycopg://{PG_USER}:{PG_PASSWORD}@{PG_HOST}:{PG_PORT}/{PG_DATABASE}"
 
 
 DATABASE_URL = get_database_url()
 
 
 def init_database():
-    """データベース接続を初期化して返す"""
-    try:
-        conn = psycopg.connect(
-            host=PG_HOST,
-            port=PG_PORT,
-            user=PG_USER,
-            password=PG_PASSWORD,
-            dbname=PG_DATABASE,
-        )
-    except Exception as e:
-        print(f"PSQLへの接続エラー: {e}")
-        sys.exit(1)
+	"""データベース接続を初期化して返す"""
+	try:
+		conn = psycopg.connect(
+			host=PG_HOST,
+			port=PG_PORT,
+			user=PG_USER,
+			password=PG_PASSWORD,
+			dbname=PG_DATABASE,
+		)
+	except Exception as e:
+		print(f"PSQLへの接続エラー: {e}")
+		sys.exit(1)
 
-    return conn
+	return conn
 
 
 def close_connection(conn):
-    """データベース接続を閉じる"""
-    conn.close()
+	"""データベース接続を閉じる"""
+	conn.close()
