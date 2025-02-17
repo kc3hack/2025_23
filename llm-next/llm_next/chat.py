@@ -1,4 +1,5 @@
 import sys
+import uuid
 
 from langchain.schema.output_parser import StrOutputParser
 from langchain_community.vectorstores import PGVector
@@ -7,7 +8,7 @@ from langchain_postgres import PostgresChatMessageHistory
 
 from llm_next.db import DATABASE_URL
 from llm_next.prompt import next_gen_prompt
-import uuid
+
 
 db_dict = {}
 history_dict = {}
