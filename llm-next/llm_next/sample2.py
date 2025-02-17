@@ -9,12 +9,13 @@ from langchain.callbacks.manager import CallbackManager
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 from langchain.schema.output_parser import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
+
 
 # RAG用
 from langchain.schema.runnable import RunnableParallel, RunnablePassthrough
 from langchain.vectorstores import PGVector
 from langchain_postgres import PostgresChatMessageHistory
-from langchain_postgres.chat_message_histories import _create_table_and_index
 from langchain.chains import RetrievalQA
 
 # LocalLLM用
@@ -33,16 +34,19 @@ PG_PORT = os.getenv("PG_PORT", 5432)
 PG_USER = os.getenv("PG_USER", "postgres")
 PG_PASSWORD = os.getenv("PG_PASSWORD", "password")
 PG_DATABASE = os.getenv("PG_DATABASE", "postgres")
-DATABASE_URL = f"postgresql+psycopg2://{PG_USER}:{PG_PASSWORD}@{PG_HOST}:{PG_PORT}/{PG_DATABASE}"
+DATABASE_URL = (
+    f"postgresql+psycopg2://{PG_USER}:{PG_PASSWORD}@{PG_HOST}:{PG_PORT}/{PG_DATABASE}"
+)
 GEMINI_API_KEY = os.getenv("GOOGLE_API_KEY", "DEADC0DE")
 
 # Embeddingsモデルの初期化
-#embeddings = HuggingFaceEmbeddings(model_name="intfloat/multilingual-e5-large")
+# embeddings = HuggingFaceEmbeddings(model_name="intfloat/multilingual-e5-large")
 embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
 
 
 # Callback Managerの初期化
 callback_manager = CallbackManager([StreamingStdOutCallbackHandler()])
+
 
 def load_model(model_path):
     """LLMモデルをロードする"""
@@ -57,9 +61,10 @@ def load_model(model_path):
     )
     return llm
 
+
 # LLMモデルのロード
-#chat = load_model("../../models/Meta-Llama-3-8B-Instruct-Q4_K_M.gguf")
-#chat = VertexAI(model_name="gemini-1.5-flash-001", temperature=0, google_api_key=GEMINI_API_KEY)
+# chat = load_model("../../models/Meta-Llama-3-8B-Instruct-Q4_K_M.gguf")
+# chat = VertexAI(model_name="gemini-1.5-flash-001", temperature=0, google_api_key=GEMINI_API_KEY)
 chat = ChatGoogleGenerativeAI(model="gemini-1.5-flash-001")
 
 # PostgreSQLに接続
@@ -100,21 +105,22 @@ def chat_with_history(query: str):
     # [, Document(metadata={}, page_content='')]
     ctx = "\n".join([doc.page_content for doc, score in docs if score > 0])
     print(ctx)
-    rag_chain_with_source = (
-         prompt
-        | chat
-        | output_parser
-    )
-    
+    rag_chain_with_source = prompt | chat | output_parser
+
     answer = rag_chain_with_source.invoke({"context": ctx, "question": query})
     print(answer)
+    chat_history.add_messages([
+        HumanMessage(content=query),
+        AIMessage(content=answer),
+    ])
     return answer
+
 
 session_id = sys.argv[1]
 if not session_id:
     sys.exit(1)
-session_uuid = str(uuid.uuid4())  
-    
+session_uuid = str(uuid.uuid4())
+
 table_name = f"chat_history_{session_id}"
 
 # pgvectorを使ったVectorstoreを初期化。テーブルが存在しない場合は作成
@@ -126,17 +132,13 @@ db = PGVector(
 )
 try:
     PostgresChatMessageHistory.create_tables(conn, table_name)
-    #with conn.cursor() as c:
+    # with conn.cursor() as c:
     #    create_tables(c, table_name)
     #    print("table created")
 except Exception as e:
     print(f"table err: {e}")
     sys.exit(1)
-history = PostgresChatMessageHistory(
-    table_name,
-    session_uuid,
-    sync_connection=conn
-)
+history = PostgresChatMessageHistory(table_name, session_uuid, sync_connection=conn)
 
 
 # チャットボットとの対話ループ
