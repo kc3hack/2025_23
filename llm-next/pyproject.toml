@@ -1,0 +1,14 @@
+[project]
+name = "llm-db"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "chromadb>=0.6.3",
+    "langchain>=0.3.18",
+    "llama-index>=0.12.17",
+    "logging>=0.4.9.6",
+    "openai>=1.63.1",
+    "psycopg2>=2.9.10",
+]
