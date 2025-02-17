@@ -10,4 +10,3 @@ next_gen_prompt = ChatPromptTemplate.from_template(
     {question}
     """
 )
-

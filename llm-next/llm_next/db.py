@@ -4,6 +4,7 @@ import psycopg
 
 from dotenv import load_dotenv
 import os
+
 load_dotenv()
 
 PG_HOST = os.getenv("PG_HOST", "localhost")
@@ -12,10 +13,14 @@ PG_USER = os.getenv("PG_USER", "postgres")
 PG_PASSWORD = os.getenv("PG_PASSWORD", "password")
 PG_DATABASE = os.getenv("PG_DATABASE", "postgres")
 
+
 def get_database_url():
     """データベース接続用のURLを返す"""
     return f"postgresql+psycopg://{PG_USER}:{PG_PASSWORD}@{PG_HOST}:{PG_PORT}/{PG_DATABASE}"
+
+
 DATABASE_URL = get_database_url()
+
 
 def init_database():
     """データベース接続を初期化して返す"""
@@ -37,5 +42,3 @@ def init_database():
 def close_connection(conn):
     """データベース接続を閉じる"""
     conn.close()
-
-

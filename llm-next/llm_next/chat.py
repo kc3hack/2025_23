@@ -16,7 +16,10 @@ db_dict = {}
 history_dict = {}
 output_parser = StrOutputParser()
 
-def chat_with_history(query: str, session_id: str, session_uuid: str, embeddings, llm, conn):
+
+def chat_with_history(
+    query: str, session_id: str, session_uuid: str, embeddings, llm, conn
+):
     """チャット履歴を検索し、回答を生成する"""
     table_name = f"chat_history_{session_id}"
 
@@ -28,9 +31,7 @@ def chat_with_history(query: str, session_id: str, session_uuid: str, embeddings
         )
     if table_name not in history_dict:
         history_dict[table_name] = PostgresChatMessageHistory(
-            table_name,
-            session_uuid,
-            sync_connection=conn
+            table_name, session_uuid, sync_connection=conn
         )
     try:
         PostgresChatMessageHistory.create_tables(conn, table_name)
@@ -50,9 +51,10 @@ def chat_with_history(query: str, session_id: str, session_uuid: str, embeddings
     answer = rag_chain_with_source.invoke({"context": ctx, "question": query})
     # ユーザの発言をベクトル化してDBに保存
     db.add_texts([query], metadatas=[{"role": "user"}])
-    history.add_messages([
-        HumanMessage(content=query),
-        AIMessage(content=answer),
-    ])
+    history.add_messages(
+        [
+            HumanMessage(content=query),
+            AIMessage(content=answer),
+        ]
+    )
     return answer
-
