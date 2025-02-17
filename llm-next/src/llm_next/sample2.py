@@ -1,14 +1,16 @@
 import os
 import sys
+import uuid
 
 from dotenv import load_dotenv
-import psycopg2
+import psycopg
 
 from langchain.callbacks.manager import CallbackManager
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.vectorstores import PGVector
 from langchain_postgres import PostgresChatMessageHistory
+from langchain_postgres.chat_message_histories import _create_table_and_index
 from langchain.chains import RetrievalQA
 from langchain_community.llms.llamacpp import LlamaCpp
 
@@ -41,11 +43,11 @@ def load_model(model_path):
     return llm
 
 # LLMモデルのロード
-chat = load_model("../../Meta-Llama-3-8B-Instruct-Q4_K_M.gguf")
+chat = load_model("../../models/Meta-Llama-3-8B-Instruct-Q4_K_M.gguf")
 
 # PostgreSQLに接続
 try:
-    conn = psycopg2.connect(
+    conn = psycopg.connect(
         host=PG_HOST,
         port=PG_PORT,
         user=PG_USER,
@@ -62,19 +64,17 @@ def chat_with_history(query: str):
     retriever = db.as_retriever(search_kwargs={"k": 2})  # 検索結果の上位2件を取得
     qa = RetrievalQA.from_chain_type(llm=chat, chain_type="stuff", retriever=retriever)
     answer = qa.run(query)
-    #message_history.add_user_message(query)
-    #message_history.add_ai_message(answer)
+    history.add_user_message(query)
+    #history.add_ai_message(answer)
 
     return answer
 
 session_id = sys.argv[1]
 if not session_id:
     sys.exit(1)
+session_uuid = str(uuid.uuid4())  
     
 table_name = f"chat_history_{session_id}"
-#PostgresChatMessageHistory.create_tables(conn, table_name)
-#message_history = PostgresChatMessageHistory(conn, table_name)
-#message_history.prepare_session()
 
 # pgvectorを使ったVectorstoreを初期化。テーブルが存在しない場合は作成
 COLLECTION_NAME = "chat_history"  # 好きなコレクション名に変更可能
@@ -83,7 +83,19 @@ db = PGVector(
     connection_string=DATABASE_URL,
     embedding_function=embeddings,
 )
-
+try:
+    PostgresChatMessageHistory.create_tables(conn, table_name)
+    #with conn.cursor() as c:
+    #    create_tables(c, table_name)
+    #    print("table created")
+except Exception as e:
+    print(f"table err: {e}")
+    sys.exit(1)
+history = PostgresChatMessageHistory(
+    table_name,
+    session_uuid,
+    sync_connection=conn
+)
 
 
 # チャットボットとの対話ループ
