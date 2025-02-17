@@ -93,28 +93,22 @@ def chat_with_history(query: str):
     db.add_texts([query], metadatas=[{"role": "user"}])
 
     # ベクトル検索で関連する会話履歴を取得
-    docs = db.similarity_search(query, k=3)  # kは取得する履歴の数
-    return docs
+    print("ok")
+    docs = db.similarity_search_with_score(query, k=3)  # kは取得する履歴の数
 
+    print(docs)
+    # [, Document(metadata={}, page_content='')]
+    ctx = "\n".join([doc.page_content for doc, score in docs if score > 0])
+    print(ctx)
     rag_chain_with_source = (
-        {"context": docs, "question": RunnablePassthrough()}
-        | prompt
+         prompt
         | chat
         | output_parser
     )
     
-    answer = rag_chain_with_source.invoke(query)
+    answer = rag_chain_with_source.invoke({"context": ctx, "question": query})
     print(answer)
     return answer
-
-    # AIの回答をベクトル化してDBに保存
-    #db.add_texts([answer], metadatas=[{"role": "ai"}])
-
-    #answer = qa.run(query)
-    #history.add_user_message(query)
-    #history.add_ai_message(answer)
-
-    #return rag_chain_with_source.invoke(query)
 
 session_id = sys.argv[1]
 if not session_id:
