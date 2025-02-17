@@ -1,5 +1,4 @@
 import sys
-import uuid
 
 from dotenv import load_dotenv
 
@@ -17,8 +16,6 @@ def main() -> None:
         print("Error: Please provide a session ID.")
         sys.exit(1)
 
-    session_uuid = str(uuid.uuid4())
-
     # データベースの初期化
     conn = init_database()
 
@@ -34,9 +31,7 @@ def main() -> None:
         if user_input.lower() == "exit":
             break
         try:
-            response = chat_with_history(
-                user_input, session_id, session_uuid, embeddings, llm, conn
-            )
+            response = chat_with_history(user_input, session_id, embeddings, llm, conn)
             print(f"回答: {response}")
         except Exception as e:
             print(f"エラーが発生しました: {e}")

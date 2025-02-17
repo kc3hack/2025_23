@@ -7,14 +7,14 @@ from langchain_postgres import PostgresChatMessageHistory
 
 from llm_next.db import DATABASE_URL
 from llm_next.prompt import next_gen_prompt
-
+import uuid
 
 db_dict = {}
 history_dict = {}
 output_parser = StrOutputParser()
 
 
-def chat_with_history(query: str, session_id: str, session_uuid: str, embeddings, llm, conn):
+def chat_with_history(query: str, session_id: str, embeddings, llm, conn):
     """チャット履歴を検索し、回答を生成する"""
     table_name = f"chat_history_{session_id}"
 
@@ -25,6 +25,7 @@ def chat_with_history(query: str, session_id: str, session_uuid: str, embeddings
             embedding_function=embeddings,
         )
     if table_name not in history_dict:
+        session_uuid = str(uuid.uuid4())
         history_dict[table_name] = PostgresChatMessageHistory(
             table_name, session_uuid, sync_connection=conn
         )
