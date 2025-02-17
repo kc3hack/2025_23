@@ -35,7 +35,7 @@ def chat_with_history(query: str, session_id: str, session_uuid: str, embeddings
         sys.exit(1)
     db = db_dict[table_name]
     history = history_dict[table_name]
-    print(history.get_messages())
+    recent = "\n".join([f"{msg.content}" for msg in history.get_messages()][-5:])
 
     # ベクトル検索で関連する会話履歴を取得
     docs = db.similarity_search_with_score(query, k=3)  # kは取得する履歴の数
@@ -44,7 +44,7 @@ def chat_with_history(query: str, session_id: str, session_uuid: str, embeddings
     print(ctx)
     rag_chain_with_source = next_gen_prompt | llm | output_parser
 
-    answer = rag_chain_with_source.invoke({"context": ctx, "question": query})
+    answer = rag_chain_with_source.invoke({"context": ctx, "recent": recent, "question": query})
     # ユーザの発言をベクトル化してDBに保存
     db.add_texts([query], metadatas=[{"role": "user"}])
     history.add_messages(
