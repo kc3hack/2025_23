@@ -42,7 +42,20 @@ dependencies = ["coverage[toml]>=6.5", "pytest"]
 python = ["3.9", "3.10", "3.11"]
 
 [tool.ruff]
-extend-select = ["I"]
+line-length = 100
+fix = true
+indent-width = 4
+output-format = "full"
+show-fixes = true
+
+[tool.ruff.format]
+indent-style = "tab"
+skip-magic-trailing-comma = false
+line-ending = "lf"
+
+[tool.ruff.lint]
+extend-select = ["I", "W292"]
+select = ["E", "F"]
 
 [tool.ruff.lint.isort]
 lines-after-imports = 2
