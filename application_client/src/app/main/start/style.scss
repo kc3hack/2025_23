@@ -1,0 +1,41 @@
+.Start{
+  width:100%;
+  height:100vh;
+  background-color: #FEF7F0;
+  position: relative;
+
+  .logo{
+    position:absolute;
+    top:20%;
+    left:20%;
+    width:60%;
+
+    object-fit: contain;
+    z-index: 2;
+
+  }
+  .image{
+    position: absolute;
+
+
+    height: 80%;
+
+    object-fit: contain;
+    z-index: 3;
+  }
+
+  .auth{
+    width:100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    .login{
+      width: 10%;
+      height: 5vh;
+    }
+    .signup{
+      width: 10%;
+      height: 5vh;
+    }
+  }
+}
