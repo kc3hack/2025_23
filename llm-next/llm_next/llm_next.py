@@ -1,4 +1,5 @@
 import sys
+import uuid
 
 from dotenv import load_dotenv
 
@@ -24,6 +25,7 @@ def main() -> None:
 
     # LLMの初期化
     llm = init_llm(local=False)
+    session_uuid = str(uuid.uuid4())
 
     # チャットボットとの対話ループ
     while True:
@@ -31,7 +33,9 @@ def main() -> None:
         if user_input.lower() == "exit":
             break
         try:
-            response = chat_with_history(user_input, session_id, embeddings, llm, conn)
+            response = chat_with_history(
+                user_input, session_id, session_uuid, embeddings, llm, conn
+            )
             print(f"回答: {response}")
         except Exception as e:
             print(f"エラーが発生しました: {e}")

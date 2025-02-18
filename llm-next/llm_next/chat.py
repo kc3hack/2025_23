@@ -1,5 +1,4 @@
 import sys
-import uuid
 
 from langchain.schema.output_parser import StrOutputParser
 from langchain_community.vectorstores import PGVector
@@ -15,10 +14,9 @@ history_dict = {}
 output_parser = StrOutputParser()
 
 
-def chat_with_history(query: str, session_id: str, embeddings, llm, conn):
+def chat_with_history(query: str, session_id: str, session_uuid: str, embeddings, llm, conn):
     """チャット履歴を検索し、回答を生成する"""
     table_name = f"chat_history_{session_id}"
-
     if table_name not in db_dict:
         db_dict[table_name] = PGVector(
             collection_name=table_name,
@@ -26,17 +24,19 @@ def chat_with_history(query: str, session_id: str, embeddings, llm, conn):
             embedding_function=embeddings,
         )
     if table_name not in history_dict:
-        session_uuid = str(uuid.uuid4())
-        history_dict[table_name] = PostgresChatMessageHistory(
+        history_dict[table_name] = {}
+    if session_uuid not in history_dict[table_name]:
+        history_dict[table_name][session_uuid] = PostgresChatMessageHistory(
             table_name, session_uuid, sync_connection=conn
         )
+
     try:
         PostgresChatMessageHistory.create_tables(conn, table_name)
     except Exception as e:
         print(f"テーブル作成エラー: {e}")
         sys.exit(1)
     db = db_dict[table_name]
-    history = history_dict[table_name]
+    history = history_dict[table_name][session_uuid]
     recent = "\n".join([f"{msg.content}" for msg in history.get_messages()][-5:])
 
     # ベクトル検索で関連する会話履歴を取得
