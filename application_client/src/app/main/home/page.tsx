@@ -2,8 +2,6 @@
 
 import React, {useEffect} from "react";
 import {useState} from "react";
-import { useRecoilValue } from 'recoil'; // RecoilからuseRecoilValueをインポート
-import Link from "next/link";
 import Header from "@/app/comp/header/header";
 import './style.scss';
 import Image from "next/image";
@@ -20,6 +18,7 @@ import imagego from "@/public/person/gold/嵐山 小春 昼.jpg";
 import imagepi from "@/public/person/pink/穂谷 希愛 朝.jpg";
 import imagebl from "@/public/person/black/夜久野 怜狐 昼.png";
 import imagegr from "@/public/person/green/伏見 瞳華 昼.jpg"
+import axios from "axios";
 
 export default function Home() {
 
@@ -29,8 +28,19 @@ export default function Home() {
 
     const [characterId, setCharacterId] = useAtom(Character_idAtom);
 
+    const recieveData=async () => {
+        const response = await axios.get('http://localhost:5000/character_id_get',{withCredentials:true});
+        const response_character_id = response.data.data.character_id;
+        setCharacterId(response_character_id);
+        console.log("unde",response.data.data.character_id);
+    }
 
     useEffect(() => {
+        recieveData();
+    }, []);
+
+    useEffect(() => {
+
         if (characterId == 0) {
             setName(profilego.name);
             setSentence(profilego.sentence);
@@ -51,7 +61,7 @@ export default function Home() {
             setSentence(profilegr.sentence);
             setImage(imagegr);
         }
-    });
+    },[characterId]);
 
 
     return (

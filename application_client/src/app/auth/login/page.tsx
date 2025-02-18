@@ -9,6 +9,7 @@ import Image from "next/image";
 import { useAtom } from 'jotai';
 import {nicknameAtom, passwordAtom} from "@/global/auth/jotai";
 import {usernameAtom} from "@/global/auth/jotai";
+import  {Character_idAtom} from "@/global/favorite/jotai";
 import axios from "axios";
 import {useRouter} from "next/navigation";
 
@@ -18,6 +19,7 @@ export default function Login() {
 
     const [username, setUsername] = useAtom(usernameAtom);
     const [password, setPassword] = useAtom(passwordAtom);
+
 
     const handleChangePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
         setPassword(e.target.value);

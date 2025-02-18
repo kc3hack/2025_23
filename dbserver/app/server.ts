@@ -23,7 +23,6 @@ connection.connect(error => {
 });
 
 
-
 app.get('/', (req, res) => {
     res.send('Hello World!');
 });
@@ -56,26 +55,25 @@ app.use(
 
 
 const isAuthenticated = (req, res, next) => {
-    console.log(req.session);
     if (req.session.userId) {
         next();
     } else {
-        res.status(401).json({ message: 'Not authenticated' });
+        res.status(401).json({message: 'Not authenticated'});
     }
 };
 
 
 //login
 app.post('/login', (req, res) => {
-    const { User_name, pwd} = req.body;
-    console.log(1);
+    const {User_name, pwd} = req.body;
+    //console.log(1);
     connection.query(
         'SELECT * FROM User WHERE User_name = ?',
         [User_name],
         (error, results) => {
             if (error) {
                 console.error(error);
-                return res.status(500).json({ message: 'Internal server error' });
+                return res.status(500).json({message: 'Internal server error'});
             }
 
             if (results.length > 0) {
@@ -84,23 +82,23 @@ app.post('/login', (req, res) => {
                 bcrypt.compare(pwd, hashedPassword, (err, isMatch) => {
                     if (err) {
                         console.error(err);
-                        return res.status(500).json({ message: 'Internal server error' });
+                        return res.status(500).json({message: 'Internal server error'});
                     }
 
                     if (isMatch) {
                         console.log("ok");
                         req.session.userId = results[0].id;
-                        req.session.User_name = User_name;
-                        req.session.character_id=results[0].character_id;
+                        req.session.User_name = results[0].User_name;
+                        req.session.character_id = results[0].character_id;
                         console.log(req.session);
 
-                        res.json({ message: 'Login successful' });
+                        res.json({message: 'Login successful'});
                     } else {
-                        res.status(401).json({ message: 'Invalid credentials' });
+                        res.status(401).json({message: 'Invalid credentials'});
                     }
                 });
             } else {
-                res.status(401).json({ message: 'User not found' });
+                res.status(401).json({message: 'User not found'});
             }
         }
     );
@@ -111,24 +109,22 @@ app.post('/logout', (req, res) => {
     req.session.destroy(err => {
         if (err) {
             console.error('Error destroying session:', err);
-            return res.status(500).json({ message: 'Failed to logout' });
+            return res.status(500).json({message: 'Failed to logout'});
         }
 
         res.clearCookie('backend_session');
-        res.json({ message: 'Logout successful' });
+        res.json({message: 'Logout successful'});
     });
 });
 
 
-
-
 app.post('/signup', (req, res) => {
-    const {User_name, pwd,nickname} = req.body;
+    const {User_name, pwd, nickname,character_id} = req.body;
 
     //console.log(1);
 
     if (!User_name || !pwd || !nickname) {
-        return res.status(400).json({ error: 'Missing required fields' });
+        return res.status(400).json({error: 'Missing required fields'});
     }
 
     //console.log(req.body);
@@ -136,21 +132,72 @@ app.post('/signup', (req, res) => {
     bcrypt.hash(pwd, 10, (err, hash) => {
         if (err) {
             console.error('Error hashing password:', err);
-            return res.status(500).json({ error: 'Server error' });
+            return res.status(500).json({error: 'Server error'});
         }
 
         connection.query(
-            'INSERT INTO User (User_name, pwd,Character_id,nickname) VALUES (?, ?,0,?)',
-            [User_name, hash,nickname],
+            'INSERT INTO User (User_name, pwd,character_id,nickname) VALUES (?, ?,0,?)',
+            [User_name, hash, nickname],
             (error, result) => {
                 if (error) {
                     console.error('Error inserting data:', error);
-                    return res.status(500).json({ error: 'Server error' });
+                    return res.status(500).json({error: 'Server error'});
                 }
                 //console.log(1);
-                res.json({ data: result,
-                    message: 'Login successful'});
+                res.json({
+                    data: result,
+                    message: 'Login successful'
+                });
             }
         );
     });
 });
+
+app.put('/character_id_put',isAuthenticated, (req, res) => {
+    console.log(req.session);
+
+    const { User_name } = req.session;  // セッションからUser_nameを取得
+    const { character_id } = req.body;  // リクエストボディからcharacter_idを取得
+
+    console.log('User_name:', User_name);  // セッションのUser_nameを確認
+    console.log('character_id:', character_id);  // character_idを確認
+
+    connection.query(
+        'UPDATE User set character_id=? WHERE User_name = ?',
+        [character_id,User_name],
+
+        (error, result) => {
+            if (error) {
+                console.error('Error inserting data:', error);
+                return res.status(500).json({error: 'Server error'});
+            }
+            if (result) {
+                res.status(200).json({message: 'successful'});
+            }
+        }
+    )
+});
+
+app.get('/character_id_get',isAuthenticated, (req, res) => {
+    const { User_name } = req.session;
+    console.log(req.session);
+    console.log("get",User_name);
+    connection.query(
+        'SELECT character_id FROM User WHERE User_name = ?',
+        [User_name],
+        (error, results) => {
+            if (error) {
+                console.error('Error inserting data:', error);
+            }
+            if (results) {
+                //console.log("ok");
+                const character_id = results[0].character_id;
+                console.log(results);
+                return res.status(200).json({
+                    message: 'Successful',
+                    data: { character_id: character_id }
+                });
+            }
+        }
+    )
+})

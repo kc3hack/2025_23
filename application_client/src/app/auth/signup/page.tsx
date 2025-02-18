@@ -9,6 +9,7 @@ import { useAtom } from 'jotai';
 
 import {nicknameAtom, passwordAtom} from "@/global/auth/jotai";
 import {usernameAtom} from "@/global/auth/jotai";
+import  {Character_idAtom} from "@/global/favorite/jotai";
 import axios from "axios";
 import {useRouter} from "next/navigation";
 
@@ -44,7 +45,7 @@ export default function New() {
         }
 
         try {
-            const submitData = { User_name: username, pwd: password , nickname:nickname };
+            const submitData = { User_name: username, pwd: password , nickname:nickname ,character_id:0};
 
             const response = await axios.post('http://localhost:5000/signup', submitData,{withCredentials: true});
             console.log('登録成功:', response.data);

@@ -14,6 +14,7 @@ import {Character_idAtom} from "@/global/favorite/jotai";
 import profile from "@/global/person/black/string";
 import {useAtom} from "jotai";
 import {useRouter} from "next/navigation";
+import axios from "axios";
 
 
 const prof=()=>{
@@ -27,7 +28,26 @@ const prof=()=>{
         }, 0);
     };
 
+    const handleSubmitCharacter_idChange= async ()=> {
+        try {
+            const submitData = {
+                character_id: 2,
+            };
+            const response = await axios.put('http://localhost:5000/character_id_put', submitData, {withCredentials: true});
+
+            if (response.status === 200) {
+                console.log(response);
+                console.log(1);
+            } else {
+                console.log(0);
+            }
+        } catch{
+            console.log(0);
+        }
+    }
+
     const handleCharacter_idChange=()=>{
+        handleSubmitCharacter_idChange();
         setCharacterid(2);
         handleRouting();
     }
