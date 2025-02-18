@@ -1,0 +1,72 @@
+.prof{
+  width: 100vw;
+  height: 100%;
+
+  .container{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #FEF7F0;
+
+    .container2{
+      width: 55%;
+      height: 90%;
+      background-color: white;
+      padding: 0;
+      margin: 0;
+
+
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      border-radius: 0.8rem;
+
+      .logo{
+        width: 50%;
+        height: 90%;
+        object-fit: contain;
+        margin: 0;
+        padding: 0;
+      }
+      .introduction{
+
+        width: 50%;
+        height: 90%;
+
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+
+        .name{
+          width: 100%;
+          height: 18%;
+          color: #545454;
+          margin-top: 0.5rem;
+          margin-bottom: 2rem;
+          p{
+            font-size: 4.5rem;
+            padding: 0;
+            margin: 0;
+            margin-left: 1rem;
+          }
+        }
+        .sentence{
+          width: 100%;
+          height: 79%;
+          color: #545454;
+
+          p{
+            padding: 0;
+            margin: 0;
+            font-size: 1.7rem;
+            width: 95%;
+          }
+        }
+      }
+    }
+  }
+}
