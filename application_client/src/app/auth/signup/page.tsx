@@ -10,6 +10,7 @@ import { useAtom } from 'jotai';
 import {nicknameAtom, passwordAtom} from "@/global/auth/jotai";
 import {usernameAtom} from "@/global/auth/jotai";
 import  {Character_idAtom} from "@/global/favorite/jotai";
+
 import axios from "axios";
 import {useRouter} from "next/navigation";
 

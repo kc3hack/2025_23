@@ -1,0 +1,9 @@
+
+SELECT current_user;
+CREATE USER llm_next WITH PASSWORD 'KC3hack2025' LOGIN;
+CREATE DATABASE llm_next OWNER llm_next;
+CREATE SCHEMA AUTHORIZATION llm_next;
+GRANT ALL PRIVILEGES ON DATABASE llm_next TO llm_next;
+
+
+

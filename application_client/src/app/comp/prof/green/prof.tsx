@@ -15,6 +15,7 @@ import {Character_idAtom} from "@/global/favorite/jotai";
 import profile from "@/global/person/green/string";
 import {useAtom} from "jotai/index";
 import {useRouter} from "next/navigation";
+
 import axios from "axios";
 
 

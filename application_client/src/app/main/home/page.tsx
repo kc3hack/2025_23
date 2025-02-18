@@ -40,7 +40,6 @@ export default function Home() {
     }, []);
 
     useEffect(() => {
-
         if (characterId == 0) {
             setName(profilego.name);
             setSentence(profilego.sentence);

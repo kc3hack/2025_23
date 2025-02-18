@@ -12,8 +12,8 @@ import profile from "@/global/person/gold/string";
 import {useAtom} from "jotai/index";
 import {Character_idAtom} from "@/global/favorite/jotai";
 import {useRouter} from "next/navigation";
-import axios from "axios";
 
+import axios from "axios";
 
 const prof=()=>{
 
@@ -25,6 +25,7 @@ const prof=()=>{
             router.push("../../main/home");
         }, 0);
     };
+
 
     const handleSubmitCharacter_idChange= async ()=> {
         try {
