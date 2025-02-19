@@ -13,6 +13,8 @@ import  {Character_idAtom} from "@/global/favorite/jotai";
 import axios from "axios";
 import {useRouter} from "next/navigation";
 
+import path from "@/api/endpoint";
+
 
 
 export default function Login() {
@@ -49,7 +51,7 @@ export default function Login() {
 
         try {
             const submitData = { User_name: username, pwd: password };
-            const response = await axios.post('http://localhost:5000/login', submitData,{withCredentials: true});
+            const response = await axios.post(path+'/login', submitData,{withCredentials: true});
 
             if (response.data && response.data.message === 'Login successful') {
                 console.log('ログイン成功:', response.data);
