@@ -6,7 +6,7 @@ import Header from "@/app/comp/header/header";
 import './style.scss';
 import Image from "next/image";
 
-import { useAtom } from 'jotai';
+import {useAtom} from 'jotai';
 import {Character_idAtom} from "@/global/favorite/jotai";
 
 import profilego from "@/global/person/gold/string"
@@ -20,7 +20,11 @@ import imagebl from "@/public/person/black/夜久野 怜狐 昼.png";
 import imagegr from "@/public/person/green/伏見 瞳華 昼.jpg"
 import axios from "axios";
 
-import path from "@/api/endpoint";
+import path from "@/api/dbserver_endpoint_path";
+
+//llm front接続におけるtest-path/deploy-path
+import llm_front_apiendpoint_path from "@/api/llm_front_apiendpoint_path";
+import local_test_path from "@/api/test/local_test_path";
 
 export default function Home() {
 
@@ -30,11 +34,21 @@ export default function Home() {
 
     const [characterId, setCharacterId] = useAtom(Character_idAtom);
 
-    const recieveData=async () => {
-        const response = await axios.get(path+'/character_id_get',{withCredentials:true});
+    const [text, setText] = useState("");
+
+    //testarea変更の関数
+    const handleChangeText = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        setText(e.target.value);
+        console.log(text);
+    }
+
+    //api関連の関数
+    //dbserverからのデータの受け取り
+    const recieveData = async () => {
+        const response = await axios.get(path + '/character_id_get', {withCredentials: true});
         const response_character_id = response.data.data.character_id;
         setCharacterId(response_character_id);
-        console.log("unde",response.data.data.character_id);
+        console.log("unde", response.data.data.character_id);
     }
 
     useEffect(() => {
@@ -62,10 +76,35 @@ export default function Home() {
             setSentence(profilegr.sentence);
             setImage(imagegr);
         }
-    },[characterId]);
+    }, [characterId]);
+
+    //llm-frontへのデータをおくる関数、下のbuttonのOnclickでsubmit
+    /*const handleSubmit_for_llmfront = async () => {
+        try {
+            const submitData = {
+                user_input: text,
+                character_id: =,
+                user_id:,
+                user_name:,
+                session_uuid:,
+            };
+
+            const response = await axios.post(local_test_path, submitData, {withCredentials: true});
+            if (response.status === 200) {
+                console.log(response);
+                console.log("submit_for_llmfront:success");
+            } else {
+                console.log(response);
+                console.log("submit_for_llmfront:error1");
+            }
+        } catch {
+            console.log("submit_for_llmfront:error2");
+        }
+    };*/
 
 
     return (
+
         <div className="Home">
             <Header></Header>
 
@@ -83,7 +122,10 @@ export default function Home() {
                         <div className="introduction"><p>{sentence}</p></div>
 
                         <div className="submit">
-                            <textarea></textarea>
+                            <textarea
+                                value={text}
+                                onChange={handleChangeText}
+                                placeholder="message"></textarea>
                             <button>submit</button>
                         </div>
                     </div>

@@ -13,7 +13,7 @@ import  {Character_idAtom} from "@/global/favorite/jotai";
 import axios from "axios";
 import {useRouter} from "next/navigation";
 
-import path from "@/api/endpoint";
+import path from "@/api/dbserver_endpoint_path";
 
 
 
@@ -22,13 +22,13 @@ export default function Login() {
     const [username, setUsername] = useAtom(usernameAtom);
     const [password, setPassword] = useAtom(passwordAtom);
 
-    const handleChangePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChangePassword = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setPassword(e.target.value);
         console.log(password);
     }
 
 
-    const handleChangeUsername = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChangeUsername = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setUsername(e.target.value);
         console.log(username);
     }
@@ -59,7 +59,7 @@ export default function Login() {
             } else {
                 console.log("loginに失敗しました");
             }
-        } catch (err) {
+        } catch {
             console.log('ログインに失敗しました。');
         }
     };

@@ -7,7 +7,7 @@ import styles from "./style.module.scss";
 import Link from "next/link";
 import axios from "axios";
 
-import path from "@/api/endpoint";
+import path from "@/api/dbserver_endpoint_path";
 
 
 const Header = () => {

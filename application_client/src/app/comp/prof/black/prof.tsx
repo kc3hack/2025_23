@@ -16,7 +16,7 @@ import {useAtom} from "jotai";
 import {useRouter} from "next/navigation";
 
 import axios from "axios";
-import path from "@/api/endpoint";
+import path from "@/api/dbserver_endpoint_path";
 
 
 const prof=()=>{
