@@ -113,6 +113,7 @@ app.post('/logout', (req, res) => {
         }
 
         res.clearCookie('backend_session');
+        console.log("logout",req.session);
         res.json({message: 'Logout successful'});
     });
 });

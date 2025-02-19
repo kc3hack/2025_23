@@ -14,6 +14,8 @@ import  {Character_idAtom} from "@/global/favorite/jotai";
 import axios from "axios";
 import {useRouter} from "next/navigation";
 
+import path from "@/api/endpoint";
+
 export default function New() {
 
     const [username, setUsername] = useAtom(usernameAtom);
@@ -48,7 +50,7 @@ export default function New() {
         try {
             const submitData = { User_name: username, pwd: password , nickname:nickname ,character_id:0};
 
-            const response = await axios.post('http://localhost:5000/signup', submitData,{withCredentials: true});
+            const response = await axios.post(path+'/signup', submitData,{withCredentials: true});
             console.log('登録成功:', response.data);
             if (response.data && response.data.message === 'Login successful') {
                 console.log('ログイン成功:', response.data);

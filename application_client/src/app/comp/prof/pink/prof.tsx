@@ -15,6 +15,8 @@ import {useAtom} from "jotai/index";
 import {useRouter} from "next/navigation";
 import axios from "axios";
 
+import path from "@/api/endpoint";
+
 const prof=()=>{
     const [characterid, setCharacterid] = useAtom(Character_idAtom);
 
@@ -30,7 +32,7 @@ const prof=()=>{
             const submitData = {
                 character_id: 1,
             };
-            const response = await axios.put('http://localhost:5000/character_id_put', submitData, {withCredentials: true});
+            const response = await axios.put(path+'/character_id_put', submitData, {withCredentials: true});
 
             if (response.status === 200) {
                 console.log(response);

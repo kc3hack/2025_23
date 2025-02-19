@@ -20,6 +20,8 @@ import imagebl from "@/public/person/black/夜久野 怜狐 昼.png";
 import imagegr from "@/public/person/green/伏見 瞳華 昼.jpg"
 import axios from "axios";
 
+import path from "@/api/endpoint";
+
 export default function Home() {
 
     const [name, setName] = useState("");
@@ -29,7 +31,7 @@ export default function Home() {
     const [characterId, setCharacterId] = useAtom(Character_idAtom);
 
     const recieveData=async () => {
-        const response = await axios.get('http://localhost:5000/character_id_get',{withCredentials:true});
+        const response = await axios.get(path+'/character_id_get',{withCredentials:true});
         const response_character_id = response.data.data.character_id;
         setCharacterId(response_character_id);
         console.log("unde",response.data.data.character_id);
@@ -82,7 +84,7 @@ export default function Home() {
 
                         <div className="submit">
                             <textarea></textarea>
-                            <button></button>
+                            <button>submit</button>
                         </div>
                     </div>
                 </div>

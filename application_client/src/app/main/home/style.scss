@@ -131,20 +131,29 @@
           width: 95%;
           height: 15%;
           border: 0.15rem solid white;
-          padding-bottom: 0.5rem;
+          padding-bottom: 0.8rem;
+          border-radius: 0.3rem;
 
           textarea {
-            width: 80%;
-            height: 30%;
+            width: 91%;
+            height: 45%;
 
+            margin-left: 0.8rem;
+            margin-top: 0.8rem;
+
+            resize: none;
           }
 
           button {
-            width: 30%;
-            height: 40%;
+            width: 25%;
+            height: 30%;
 
-            margin-top: 1rem;
-            margin-left: 11rem;
+            margin-top: 0.05rem;
+            margin-left: 16.4rem;
+
+            font-size: 1.1rem;
+            border: white;
+            color: #545454;
           }
         }
       }
