@@ -140,8 +140,9 @@
 
             margin-left: 0.8rem;
             margin-top: 0.8rem;
-
             resize: none;
+            border: 0.1rem solid #545454;
+            border-radius: 0.2rem;
           }
 
           button {
@@ -152,8 +153,10 @@
             margin-left: 16.4rem;
 
             font-size: 1.1rem;
-            border: white;
+            border: 0.1rem solid #545454;
             color: #545454;
+            border-radius: 0.25rem;
+            background-color: white;
           }
         }
       }

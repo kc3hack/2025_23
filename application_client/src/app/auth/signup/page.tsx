@@ -14,7 +14,7 @@ import  {Character_idAtom} from "@/global/favorite/jotai";
 import axios from "axios";
 import {useRouter} from "next/navigation";
 
-import path from "@/api/endpoint";
+import path from "@/api/dbserver_endpoint_path";
 
 export default function New() {
 
@@ -22,13 +22,13 @@ export default function New() {
     const [password, setPassword] = useAtom(passwordAtom);
     const [nickname,setNickname] = useAtom(nicknameAtom);
 
-    const handleChangePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChangePassword = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setPassword(e.target.value);
         console.log(password);
     }
 
 
-    const handleChangeUsername = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChangeUsername = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setUsername(e.target.value);
         console.log(username);
     }
