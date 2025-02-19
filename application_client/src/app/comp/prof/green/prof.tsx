@@ -50,7 +50,7 @@ const prof=()=>{
 
 
     const handleCharacter_idChange=()=>{
-        handleCharacter_idChange();
+        handleSubmitCharacter_idChange();
         setCharacterid(3);
         handleRouting();
     }
