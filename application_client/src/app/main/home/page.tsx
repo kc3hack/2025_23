@@ -22,6 +22,8 @@ import axios from "axios";
 
 import path from "@/api/dbserver_endpoint_path";
 
+import makesession_uuid from "@/function/makesession_uuid";
+
 //llm front接続におけるtest-path/deploy-path
 import llm_front_apiendpoint_path from "@/api/llm_front_apiendpoint_path";
 import local_test_path from "@/api/test/local_test_path";
@@ -33,6 +35,18 @@ export default function Home() {
     const [image, setImage] = useState(imagego);
 
     const [characterId, setCharacterId] = useAtom(Character_idAtom);
+    const [nickname, setNickname] = useState("");
+    const [user_id, setUserId] = useState("");
+
+    //sess_uuidの定義
+    const [session_uuid, setSessionUUID] = useState("test");
+    const handleMakeSession_uuid =() => {
+        //sess_uuidの定義
+        const inputId:string=makesession_uuid();
+        console.log(inputId);
+        setSessionUUID(inputId);
+    }
+
 
     const [text, setText] = useState("");
 
@@ -47,13 +61,21 @@ export default function Home() {
     const recieveData = async () => {
         const response = await axios.get(path + '/character_id_get', {withCredentials: true});
         const response_character_id = response.data.data.character_id;
+        const response_user_id=response.data.data.user_id;
+        const response_nickname = response.data.data.user_name;//ここではUser_name(別で指定)をdbでuniqueとしてuser_idと紐づけているためnicknameを渡している。同一ユーザ名によるポスグレでの衝突を防ぐため。
+
         setCharacterId(response_character_id);
-        console.log("unde", response.data.data.character_id);
+        setUserId(response_user_id);
+        setNickname(response_nickname);
+
+        console.log("makeit", response.data.data);
     }
 
     useEffect(() => {
         recieveData();
+        handleMakeSession_uuid();
     }, []);
+
 
     useEffect(() => {
         if (characterId == 0) {
@@ -79,14 +101,14 @@ export default function Home() {
     }, [characterId]);
 
     //llm-frontへのデータをおくる関数、下のbuttonのOnclickでsubmit
-    /*const handleSubmit_for_llmfront = async () => {
+    const handleSubmit_for_llmfront = async () => {
         try {
             const submitData = {
                 user_input: text,
-                character_id: =,
-                user_id:,
-                user_name:,
-                session_uuid:,
+                character_id: characterId,
+                user_id: user_id,
+                user_name: nickname,//ここではUser_name(別で指定)をdbでuniqueとしてuser_idと紐づけているためnicknameを渡している。同一ユーザ名によるポスグレでの衝突を防ぐため。
+                session_uuid:session_uuid,
             };
 
             const response = await axios.post(local_test_path, submitData, {withCredentials: true});
@@ -100,7 +122,7 @@ export default function Home() {
         } catch {
             console.log("submit_for_llmfront:error2");
         }
-    };*/
+    };
 
 
     return (
@@ -126,7 +148,7 @@ export default function Home() {
                                 value={text}
                                 onChange={handleChangeText}
                                 placeholder="message"></textarea>
-                            <button>submit</button>
+                            <button onClick={handleSubmit_for_llmfront}>submit</button>
                         </div>
                     </div>
                 </div>
