@@ -33,6 +33,7 @@ export default function Home() {
     const [name, setName] = useState("");
     const [sentence, setSentence] = useState("");
     const [image, setImage] = useState(imagego);
+    const [speaking, setSpeaking] = useState("");
 
     const [characterId, setCharacterId] = useAtom(Character_idAtom);
     const [nickname, setNickname] = useState("");
@@ -40,9 +41,9 @@ export default function Home() {
 
     //sess_uuidの定義
     const [session_uuid, setSessionUUID] = useState("test");
-    const handleMakeSession_uuid =() => {
+    const handleMakeSession_uuid = () => {
         //sess_uuidの定義
-        const inputId:string=makesession_uuid();
+        const inputId: string = makesession_uuid();
         console.log(inputId);
         setSessionUUID(inputId);
     }
@@ -61,7 +62,7 @@ export default function Home() {
     const recieveData = async () => {
         const response = await axios.get(path + '/character_id_get', {withCredentials: true});
         const response_character_id = response.data.data.character_id;
-        const response_user_id=response.data.data.user_id;
+        const response_user_id = response.data.data.user_id;
         const response_nickname = response.data.data.user_name;//ここではUser_name(別で指定)をdbでuniqueとしてuser_idと紐づけているためnicknameを渡している。同一ユーザ名によるポスグレでの衝突を防ぐため。
 
         setCharacterId(response_character_id);
@@ -108,13 +109,34 @@ export default function Home() {
                 character_id: characterId,
                 user_id: user_id,
                 user_name: nickname,//ここではUser_name(別で指定)をdbでuniqueとしてuser_idと紐づけているためnicknameを渡している。同一ユーザ名によるポスグレでの衝突を防ぐため。
-                session_uuid:session_uuid,
+                session_uuid: session_uuid,
             };
 
-            const response = await axios.post(local_test_path, submitData, {withCredentials: true});
+            const response = await axios.post(local_test_path, submitData,
+                {withCredentials: true});
+
             if (response.status === 200) {
                 console.log(response);
+
+                //返ってきた値の設定
                 console.log("submit_for_llmfront:success");
+
+                const { text, audioData } = response.data;
+
+                //dataを受け取った後の処理
+                //text
+                setSpeaking(text);
+
+                const audioBuffer = new Uint8Array(Buffer.from(audioData, 'base64'));
+                const audioBlob = new Blob([audioBuffer], { type: 'audio/wav' });
+                const audioUrl = URL.createObjectURL(audioBlob);
+                const audio = new Audio(audioUrl);
+
+
+                // 音声再生
+                await audio.play();
+                console.log("Audio playing...");
+
             } else {
                 console.log(response);
                 console.log("submit_for_llmfront:error1");
@@ -135,7 +157,7 @@ export default function Home() {
                     <Image src={image} alt="error" layout="fill" objectFit="cover"></Image>
                     <div className="gradation"></div>
                     <div className="text-white">
-                        <p className="text">朝から会えたんめっちゃ嬉しい～ ぎゅーしてもええ？</p>
+                        <p className="text">{speaking}</p>
                     </div>
                 </div>
                 <div className="inputcontainer">
