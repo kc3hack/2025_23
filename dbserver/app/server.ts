@@ -5,6 +5,7 @@ const mysql = require('mysql2');
 const cors = require('cors');
 const session = require('express-session');
 const bcrypt = require('bcrypt');
+const test_post_for_llmfront=require("./test/test_post_for_llmfront.ts");
 
 
 const connection = mysql.createConnection({
@@ -113,14 +114,14 @@ app.post('/logout', (req, res) => {
         }
 
         res.clearCookie('backend_session');
-        console.log("logout",req.session);
+        console.log("logout", req.session);
         res.json({message: 'Logout successful'});
     });
 });
 
 
 app.post('/signup', (req, res) => {
-    const {User_name, pwd, nickname,character_id} = req.body;
+    const {User_name, pwd, nickname, character_id} = req.body;
 
     //console.log(1);
 
@@ -154,18 +155,18 @@ app.post('/signup', (req, res) => {
     });
 });
 
-app.put('/character_id_put',isAuthenticated, (req, res) => {
+app.put('/character_id_put', isAuthenticated, (req, res) => {
     console.log(req.session);
 
-    const { User_name } = req.session;  // セッションからUser_nameを取得
-    const { character_id } = req.body;  // リクエストボディからcharacter_idを取得
+    const {User_name} = req.session;  // セッションからUser_nameを取得
+    const {character_id} = req.body;  // リクエストボディからcharacter_idを取得
 
     console.log('User_name:', User_name);  // セッションのUser_nameを確認
     console.log('character_id:', character_id);  // character_idを確認
 
     connection.query(
         'UPDATE User set character_id=? WHERE User_name = ?',
-        [character_id,User_name],
+        [character_id, User_name],
 
         (error, result) => {
             if (error) {
@@ -179,12 +180,12 @@ app.put('/character_id_put',isAuthenticated, (req, res) => {
     )
 });
 
-app.get('/character_id_get',isAuthenticated, (req, res) => {
-    const { User_name } = req.session;
+app.get('/character_id_get', isAuthenticated, (req, res) => {
+    const {User_name} = req.session;
     console.log(req.session);
-    console.log("get",User_name);
+    console.log("get", User_name);
     connection.query(
-        'SELECT character_id FROM User WHERE User_name = ?',
+        'SELECT * FROM User WHERE User_name = ?',
         [User_name],
         (error, results) => {
             if (error) {
@@ -193,12 +194,26 @@ app.get('/character_id_get',isAuthenticated, (req, res) => {
             if (results) {
                 //console.log("ok");
                 const character_id = results[0].character_id;
+                const nickname = results[0].nickname;
+                const id = results[0].id;
                 console.log(results);
                 return res.status(200).json({
                     message: 'Successful',
-                    data: { character_id: character_id }
+                    data: {
+                        character_id: character_id,
+                        user_id: id,
+                        user_name: nickname
+                    }
                 });
             }
         }
     )
 })
+
+
+//ここからtest
+test_post_for_llmfront(app);
+/*
+app.post('/test/post_for_llmfront',(req,res)=>{
+    console.log(req.body);
+})*/
