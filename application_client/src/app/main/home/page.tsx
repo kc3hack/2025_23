@@ -16,9 +16,13 @@ import profilebl from "@/global/person/black/string";
 import profilegr from "@/global/person/green/string";
 
 import imagego from "@/public/person/gold/嵐山 小春 昼.jpg";
+import imagegonight from "@/public/person/gold/嵐山 小春 夜.jpg";
 import imagepi from "@/public/person/pink/穂谷 希愛 朝.jpg";
+import imagepinight from "@/public/person/pink/穂谷 希愛 夕方.jpg"
 import imagebl from "@/public/person/black/夜久野 怜狐 昼.png";
+import imageblnight from "@/public/person/black/夜久野 怜狐 夕.jpg"
 import imagegr from "@/public/person/green/伏見 瞳華 昼.jpg"
+import imagegrnight from "@/public/person/green/伏見 瞳華 夜.jpg"
 import axios from "axios";
 
 import path from "@/api/dbserver_endpoint_path";
@@ -39,6 +43,16 @@ export default function Home() {
     const [characterId, setCharacterId] = useAtom(Character_idAtom);
     const [nickname, setNickname] = useState("");
     const [user_id, setUserId] = useState("");
+
+
+    //時間関数
+    const [time, setTime] = useState(new Date());
+    const isBetween18to3 = () => {
+        const hours = time.getHours();
+        return hours >= 18 || hours < 3;
+    };
+
+
 
 
     //値の変更に伴う変数の変換
@@ -115,10 +129,11 @@ export default function Home() {
     //llm-frontへのデータをおくる関数、下のbuttonのOnclickでsubmit
     const handleSubmit_for_llmfront = async () => {
 
-        if (limitRef.current) return; // すでに実行中なら何もしない
-        limitRef.current = true; // 実行フラグを立てる
-        handleHistoryAdd({content:text,type:"human"});
+        if (limitRef.current) return; //
+        limitRef.current = true;
 
+        handleHistoryAdd({content:text,type:"human"});
+        setText("");
         try {
             const submitData = {
                 user_input: text,
@@ -162,7 +177,7 @@ export default function Home() {
         } catch {
             console.log("submit_for_llmfront:error2");
         }finally {
-            limitRef.current = false; // 実行完了後にリセット
+            limitRef.current = false; //
         }
     };
 
@@ -197,6 +212,7 @@ export default function Home() {
     };
 
     useEffect(() => {
+        setTime(new Date());
         //addTenHistoryItems(); test
         recieveData();
         handleMakeSession_uuid();
@@ -211,22 +227,37 @@ export default function Home() {
         if (characterId == 0) {
             setName(profilego.name);
             setSentence(profilego.sentence);
-            setImage(imagego);
-
+            if (!isBetween18to3()) {
+                setImage(imagego)
+            } else {
+                setImage(imagegonight);
+            }
         } else if (characterId == 1) {
             setName(profilepi.name);
             setSentence(profilepi.sentence);
-            setImage(imagepi);
+            if(!isBetween18to3()){
+                setImage(imagepi)
+            } else{
+                setImage(imagepinight);
+            }
 
         } else if (characterId == 2) {
             setName(profilebl.name);
             setSentence(profilebl.sentence);
-            setImage(imagebl)
-
+            if(!isBetween18to3()){
+                setImage(imagebl)
+            }else{
+                setImage(imageblnight);
+            }
         } else if (characterId == 3) {
             setName(profilegr.name);
             setSentence(profilegr.sentence);
-            setImage(imagegr);
+            if(!isBetween18to3()){
+                setImage(imagegr)
+            } else{
+                setImage(imagegrnight);
+            }
+
         }
     }, [characterId]);
 
@@ -266,7 +297,7 @@ export default function Home() {
                                 value={text}
                                 onChange={handleChangeText}
                                 placeholder="message"></textarea>
-                            <button onClick={handleSubmit_for_llmfront}>submit</button>
+                            <button onClick={handleSubmit_for_llmfront}>送信</button>
                         </div>
                     </div>
                 </div>
