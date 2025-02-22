@@ -23,13 +23,11 @@ export default function Login() {
 
     const handleChangePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
         setPassword(e.target.value);
-        console.log(password);
     }
 
 
     const handleChangeUsername = (e: React.ChangeEvent<HTMLInputElement>) => {
         setUsername(e.target.value);
-        console.log(username);
     }
 
     const router = useRouter();
@@ -44,7 +42,7 @@ export default function Login() {
     const handleSubmit = async () => {
 
         if (!username || !password) {
-            console.log("loginに失敗しました。")
+            setError("すべてのフォームを入力してください");
             return;
         }
 
@@ -53,10 +51,8 @@ export default function Login() {
             const response = await axios.post(path+'/login', submitData,{withCredentials: true});
 
             if (response.data && response.data.message === 'Login successful') {
-                console.log('ログイン成功:', response.data);
                 handleRouting();
             } else {
-                console.log("loginに失敗しました");
             }
         } catch {
             setError("ユーザ名かパスワードが間違っています");

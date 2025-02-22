@@ -35,13 +35,8 @@ const useProf=()=>{
             const response = await axios.put(path+'/character_id_put', submitData, {withCredentials: true});
 
             if (response.status === 200) {
-                console.log(response);
-                console.log(1);
-            } else {
-                console.log(0);
             }
         } catch{
-            console.log(0);
         }
     }
 
