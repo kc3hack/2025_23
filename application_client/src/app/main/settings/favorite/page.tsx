@@ -1,9 +1,7 @@
 'use client'
 
 import React from 'react';
-import Link from 'next/link';
 import Header from '@/app/comp/header/header';
-import Image from 'next/image';
 import '@splidejs/splide/css';
 import { Splide, SplideSlide } from 'splide-nextjs/react-splide';
 

@@ -2,6 +2,7 @@
 
 import React, {useEffect} from "react";
 import {useState} from "react";
+import {useRef} from "react";
 import Header from "@/app/comp/header/header";
 import './style.scss';
 import Image from "next/image";
@@ -30,6 +31,8 @@ import local_test_path from "@/api/test/local_test_path";
 
 export default function Home() {
 
+    const lastMessageRef = useRef<HTMLDivElement | null>(null);
+
     const [name, setName] = useState("");
     const [sentence, setSentence] = useState("");
     const [image, setImage] = useState(imagego);
@@ -38,6 +41,44 @@ export default function Home() {
     const [characterId, setCharacterId] = useAtom(Character_idAtom);
     const [nickname, setNickname] = useState("");
     const [user_id, setUserId] = useState("");
+
+
+    //値の変更に伴う変数の変換
+    const [history,setHistory]=useState([{
+        content:"",
+        type:"",
+    }]);
+
+    //test
+    const addTenHistoryItems = () => {
+        const newItems = [
+            { content: "今日何してたの？", type: "human" },
+            { content: "お仕事してたよ〜！〇〇くんは？", type: "ai" },
+            { content: "俺はちょっとゲームしてた！", type: "human" },
+            { content: "いいな〜！どんなゲーム？", type: "ai" },
+            { content: "RPG系のやつ！ストーリーがめっちゃ面白い！", type: "human" },
+            { content: "そうなんだ！今度一緒にやってみたいな♡", type: "ai" },
+            { content: "それいいね！今度一緒にやろう！", type: "human" },
+            { content: "約束だよ？指切り〜♪", type: "ai" },
+            { content: "指切りげんまん！", type: "human" },
+            { content: "破ったら…罰ゲームだよ？(笑)", type: "ai" },
+        ];
+
+        localStorage.setItem("history", JSON.stringify(newItems));
+        setHistory(newItems);
+
+        console.log(newItems);
+        setHistory(prevHistory => [...prevHistory, ...newItems]);
+    };
+
+    const handleHistoryAdd = (newMessage: { content: string; type: string }) => {
+        const responseHistory = JSON.parse(localStorage.getItem("history") || "[]");
+
+        const updatedHistory = [...responseHistory, newMessage];
+        setHistory(updatedHistory);
+
+        localStorage.setItem("history", JSON.stringify(updatedHistory));
+    };
 
     //sess_uuidの定義
     const [session_uuid, setSessionUUID] = useState("test");
@@ -68,41 +109,12 @@ export default function Home() {
         setCharacterId(response_character_id);
         setUserId(response_user_id);
         setNickname(response_nickname);
-
-        console.log("makeit", response.data.data);
     }
 
-    useEffect(() => {
-        recieveData();
-        handleMakeSession_uuid();
-    }, []);
-
-
-    useEffect(() => {
-        if (characterId == 0) {
-            setName(profilego.name);
-            setSentence(profilego.sentence);
-            setImage(imagego);
-
-        } else if (characterId == 1) {
-            setName(profilepi.name);
-            setSentence(profilepi.sentence);
-            setImage(imagepi);
-
-        } else if (characterId == 2) {
-            setName(profilebl.name);
-            setSentence(profilebl.sentence);
-            setImage(imagebl)
-
-        } else if (characterId == 3) {
-            setName(profilegr.name);
-            setSentence(profilegr.sentence);
-            setImage(imagegr);
-        }
-    }, [characterId]);
 
     //llm-frontへのデータをおくる関数、下のbuttonのOnclickでsubmit
     const handleSubmit_for_llmfront = async () => {
+
         try {
             const submitData = {
                 user_input: text,
@@ -146,6 +158,74 @@ export default function Home() {
         }
     };
 
+    //posgreからのデータの受け取り
+
+    const handleHistoryGet = async () => {
+        try {
+            const responseData = await axios.get(path + "/postgres", { withCredentials: true });
+            console.log(responseData);
+
+            const responseHistory = responseData.data; // 配列が返っているか確認
+            console.log(responseHistory);
+
+            localStorage.setItem("history", JSON.stringify(responseHistory));
+            setHistory(responseHistory);
+        } catch (error) {
+            console.error("Error fetching history:", error);
+        }
+    };
+
+
+
+
+
+    //マウント時、実行ラグ3000ms
+    const delayedFunction = () => {
+        setTimeout(() => {
+            handleSubmit_for_llmfront()
+        }, 3000);
+    };
+
+    useEffect(() => {
+        addTenHistoryItems();
+        recieveData();
+        handleMakeSession_uuid();
+        delayedFunction();
+        //handleHistoryGet();
+    }, []);
+
+    useEffect(() => {
+        if (lastMessageRef.current) {
+            lastMessageRef.current.scrollIntoView({ behavior: "smooth" });
+        }
+
+        handleHistoryAdd({ content: speaking, type: "ai" });
+    }, [speaking]);
+
+
+    useEffect(() => {
+        if (characterId == 0) {
+            setName(profilego.name);
+            setSentence(profilego.sentence);
+            setImage(imagego);
+
+        } else if (characterId == 1) {
+            setName(profilepi.name);
+            setSentence(profilepi.sentence);
+            setImage(imagepi);
+
+        } else if (characterId == 2) {
+            setName(profilebl.name);
+            setSentence(profilebl.sentence);
+            setImage(imagebl)
+
+        } else if (characterId == 3) {
+            setName(profilegr.name);
+            setSentence(profilegr.sentence);
+            setImage(imagegr);
+        }
+    }, [characterId]);
+
 
     return (
 
@@ -157,7 +237,19 @@ export default function Home() {
                     <Image src={image} alt="error" layout="fill" objectFit="cover"></Image>
                     <div className="gradation"></div>
                     <div className="text-white">
-                        <p className="text">{speaking}</p>
+                        {history.map((item, index) => (
+                            item.type === "ai" ? (
+                                <div key={index} className="ai message">
+                                    {item.content}
+                                </div>
+                            ) : (
+                                <div key={index} className="human message">
+                                    {item.content}
+                                </div>
+                            )
+                        ))}
+
+                        <div className="space"></div>
                     </div>
                 </div>
                 <div className="inputcontainer">

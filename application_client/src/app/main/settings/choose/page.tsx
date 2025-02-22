@@ -1,8 +1,6 @@
 'use client'
 
 import React from 'react'
-import {useState} from "react";
-import Link from "next/link";
 import Header from "@/app/comp/header/header";
 import './style.scss';
 import Image from "next/image";

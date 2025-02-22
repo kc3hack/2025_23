@@ -1,12 +1,9 @@
 'use client'
 
 import React from 'react';
-import Link from 'next/link';
-import Header from '@/app/comp/header/header';
 import Image from 'next/image';
 import styles from "./style.module.scss";
 import logo from '@/public/person/gold/嵐山 小春 私服.jpg';
-import logo2 from '@/public/person/gold/29ff73c69abaf642.jpg';
 
 import profile from "@/global/person/gold/string";
 import {useAtom} from "jotai/index";
@@ -16,9 +13,9 @@ import {useRouter} from "next/navigation";
 import axios from "axios";
 import path from "@/api/dbserver_endpoint_path";
 
-const prof=()=>{
+const useProf=()=>{
 
-    const [characterid, setCharacterid] = useAtom(Character_idAtom);
+    const [, setCharacterid] = useAtom(Character_idAtom);
 
     const router = useRouter();
     const handleRouting=()=>{
@@ -68,4 +65,4 @@ const prof=()=>{
     );
 }
 
-export default prof;
+export default useProf;

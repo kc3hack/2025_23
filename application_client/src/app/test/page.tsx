@@ -1,6 +1,5 @@
 import React from "react";
 import Link from "next/link";
-import Login from "@/app/auth/login/page"
 import Header from "@/app/comp/header/header"
 import Prof from "@/app/comp/prof/green/prof";
 
