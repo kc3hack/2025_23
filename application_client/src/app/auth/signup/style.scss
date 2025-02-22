@@ -1,4 +1,4 @@
-.new{
+.new1{
   display: flex;
   justify-content: center;
   align-items: center;
@@ -11,7 +11,7 @@
     height: 33%;
     object-fit: contain;
     padding: 0;
-    margin-top: 12rem;
+    margin-top: 5rem;
   }
 
   .login-tag{
@@ -33,22 +33,16 @@
     flex-direction: column;
     background-color: #FEF7F0;
     align-items: center;
-    margin-bottom: 15rem;
+    margin-bottom: 3rem;
 
 
-    .up {
-      padding: 0.5rem;
-      margin: 1.7rem;
-      width: 70%;
-    }
-
-    .down {
-      padding: 0.5rem;
-      width: 70%;
-    }
 
     textarea{
       resize: none;
+
+      padding: 0.5rem;
+      margin: 1.0rem;
+      width: 70%;
       &:focus{
         outline:none;
       }

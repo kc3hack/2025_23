@@ -26,7 +26,7 @@ import path from "@/api/dbserver_endpoint_path";
 import makesession_uuid from "@/function/makesession_uuid";
 
 //llm front接続におけるtest-path/deploy-path
-import llm_front_apiendpoint_path from "@/api/llm_front_apiendpoint_path";
+//import llm_front_apiendpoint_path from "@/api/llm_front_apiendpoint_path";
 import local_test_path from "@/api/test/local_test_path";
 
 export default function Home() {
@@ -160,7 +160,7 @@ export default function Home() {
 
     //posgreからのデータの受け取り
 
-    const handleHistoryGet = async () => {
+    /*const handleHistoryGet = async () => {
         try {
             const responseData = await axios.get(path + "/postgres", { withCredentials: true });
             console.log(responseData);
@@ -173,7 +173,7 @@ export default function Home() {
         } catch (error) {
             console.error("Error fetching history:", error);
         }
-    };
+    };*/
 
 
 

@@ -4,6 +4,7 @@ import Link from "next/link";
 import logo from "@/public/logo.png"
 import Image from "next/image";
 import { useAtom } from 'jotai';
+import './style.scss';
 
 import {nicknameAtom, passwordAtom} from "@/global/auth/jotai";
 import {usernameAtom} from "@/global/auth/jotai";
@@ -29,6 +30,12 @@ export default function New() {
         setUsername(e.target.value);
         console.log(username);
     }
+
+    const handleChangeNickname = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        setNickname(e.target.value);
+        console.log(username);
+    }
+
 
     const router = useRouter();
     const handleRouting=()=>{
@@ -63,7 +70,7 @@ export default function New() {
 
 
     return (
-        <div className="new">
+        <div className="new1">
 
             <Image src={logo} alt="error" className="logo"></Image>
             <div className="login-tag">
@@ -78,10 +85,17 @@ export default function New() {
                 />
 
                 <textarea
-                    className="down"
+                    className="middle-textarea"
                     value={password}
                     onChange={handleChangePassword}
                     placeholder="Password"
+                />
+
+                <textarea
+                    className="down"
+                    value={nickname}
+                    onChange={handleChangeNickname}
+                    placeholder="Nickname"
                 />
 
                 <button onClick={handleSubmit}>Sign Up</button>
