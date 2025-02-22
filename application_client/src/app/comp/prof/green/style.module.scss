@@ -66,6 +66,21 @@
             width: 95%;
           }
         }
+        button{
+          margin-left: 10rem;
+          margin-bottom: 1.5rem;
+          padding-left: 1.5rem;
+          padding-right: 1.5rem;
+          color: #545454;
+          background-color: #FEF7F0;
+          border-radius: 0.2rem;
+          border: none;
+          font-size: 1.1rem;
+
+          &:hover{
+            border: #545454 solid 1px;
+          }
+        }
       }
     }
   }

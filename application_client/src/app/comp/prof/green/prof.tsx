@@ -60,7 +60,7 @@ const useProf=()=>{
                     <div className={styles.introduction}>
                         <div className={styles.name}><p>{profile.name}</p></div>
                         <div className={styles.sentence}><p>{profile.sentence}</p></div>
-                        <button onClick={handleCharacter_idChange}>set</button>
+                        <button onClick={handleCharacter_idChange}>この娘と話す</button>
                     </div>
                 </div>
             </div>
