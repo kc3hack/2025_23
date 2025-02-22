@@ -3,13 +3,13 @@ var express = require('express');
 var app = express();
 require('dotenv').config();
 const mysql = require('mysql2');
-//const { Pool } = require("pg");
+const { Pool } = require("pg");
 
 
 const cors = require('cors');
 const session = require('express-session');
 const bcrypt = require('bcrypt');
-const test_post_for_llmfront=require("./test/test_post_for_llmfront.ts");
+//const test_post_for_llmfront=require("./test/test_post_for_llmfront.ts");
 
 
 const connection = mysql.createConnection({
@@ -19,14 +19,14 @@ const connection = mysql.createConnection({
     database: process.env.DB_NAME
 });
 
-//postgre
-/*const pool = new Pool({
+//postgres
+const pool = new Pool({
     host: process.env.PG_HOST,
     user: process.env.PG_USER,
     password: process.env.PG_PASSWORD,
     database: process.env.PG_DATABASE,
     port: Number(process.env.PG_PORT),
-});*/
+});
 
 
 
@@ -183,11 +183,11 @@ app.post('/signup', (req, res) => {
 app.put('/character_id_put', isAuthenticated, (req, res) => {
     console.log(req.session);
 
-    const {User_name} = req.session;  // セッションからUser_nameを取得
-    const {character_id} = req.body;  // リクエストボディからcharacter_idを取得
+    const {User_name} = req.session;
+    const {character_id} = req.body;
 
-    console.log('User_name:', User_name);  // セッションのUser_nameを確認
-    console.log('character_id:', character_id);  // character_idを確認
+    console.log('User_name:', User_name);
+    console.log('character_id:', character_id);
 
     connection.query(
         'UPDATE User set character_id=? WHERE User_name = ?',
@@ -241,7 +241,7 @@ app.get('/character_id_get', isAuthenticated, (req, res) => {
 //postgres//////////////////////////////////////////////////////////////////////////////////////////////////
 
 //test
-const newItems = [
+/*const newItems = [
     { content: "今日何してたの？", type: "human" },
     { content: "お仕事してたよ〜！〇〇くんは？", type: "ai" },
     { content: "俺はちょっとゲームしてた！", type: "human" },
@@ -252,13 +252,13 @@ const newItems = [
     { content: "約束だよ？指切り〜♪", type: "ai" },
     { content: "指切りげんまん！", type: "human" },
     { content: "破ったら…罰ゲームだよ？(笑)", type: "ai" },
-];
+];*/
 
 
 app.get("/postgres",(req, res) => {
     const { UserId } = req.session;
 
-        /*const result = query(
+        const result = query(
             `SELECT 
                 message->'data'->>'type' AS type,
                 message->'data'->>'content' AS content
@@ -267,10 +267,10 @@ app.get("/postgres",(req, res) => {
             ORDER BY created_at DESC
             LIMIT 30`,
             [UserId]
-        );*/
+        );
 
-        //const objectTypeData=result.rows.map(row => row.message_data);
-        const objectTypeData=newItems;
+        const objectTypeData=result.rows.map(row => row.message_data);
+        //const objectTypeData=newItems;
         res.json(objectTypeData);
         console.log(objectTypeData);
 });
@@ -278,7 +278,7 @@ app.get("/postgres",(req, res) => {
 
 
 //ここからtest
-test_post_for_llmfront(app);
+//test_post_for_llmfront(app);
 /*
 app.post('/test/post_for_llmfront',(req,res)=>{
     console.log(req.body);
