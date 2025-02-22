@@ -13,6 +13,7 @@ import axios from "axios";
 import {useRouter} from "next/navigation";
 
 import path from "@/api/dbserver_endpoint_path";
+import {useState} from "react";
 
 export default function New() {
 
@@ -20,18 +21,20 @@ export default function New() {
     const [password, setPassword] = useAtom(passwordAtom);
     const [nickname,setNickname] = useAtom(nicknameAtom);
 
-    const handleChangePassword = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const [error,setError]=useState("");
+
+    const handleChangePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
         setPassword(e.target.value);
         console.log(password);
     }
 
 
-    const handleChangeUsername = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const handleChangeUsername = (e: React.ChangeEvent<HTMLInputElement>) => {
         setUsername(e.target.value);
         console.log(username);
     }
 
-    const handleChangeNickname = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const handleChangeNickname = (e: React.ChangeEvent<HTMLInputElement>) => {
         setNickname(e.target.value);
         console.log(username);
     }
@@ -64,6 +67,7 @@ export default function New() {
             }
         } catch (err) {
             console.error('Error:', err);
+            setError("このユーザー名は既に使用されています。");
         }
     };
 
@@ -77,26 +81,28 @@ export default function New() {
                 <p>Sign Up</p>
             </div>
             <div className="main">
-                <textarea
+                <input
                     className="up"
                     value={username}
                     onChange={handleChangeUsername}
                     placeholder="Enter username"
                 />
 
-                <textarea
+                <input
                     className="middle-textarea"
-                    value={password}
-                    onChange={handleChangePassword}
-                    placeholder="Password"
-                />
-
-                <textarea
-                    className="down"
                     value={nickname}
                     onChange={handleChangeNickname}
                     placeholder="Nickname"
                 />
+
+                <input
+                    className="down"
+                    type="password"
+                    value={password}
+                    onChange={handleChangePassword}
+                    placeholder="Password"
+                />
+                <p className="error">{error}</p>
 
                 <button onClick={handleSubmit}>Sign Up</button>
 

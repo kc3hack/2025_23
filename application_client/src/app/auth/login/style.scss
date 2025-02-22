@@ -36,19 +36,13 @@
     margin-bottom: 15rem;
 
 
-    .up {
-      padding: 0.5rem;
-      margin: 1.7rem;
-      width: 70%;
-    }
 
-    .down {
-      padding: 0.5rem;
-      width: 70%;
-    }
-
-    textarea{
+    Input{
       resize: none;
+      padding: 0.5rem;
+      margin: 1.0rem;
+      width: 70%;
+
       &:focus{
         outline:none;
       }
