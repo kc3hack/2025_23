@@ -6,7 +6,6 @@ const text = "朝から会えたんめっちゃ嬉しい～ ぎゅーしても�
 
 const post_for_llm_front = (app) => {
     app.post('/test/post_for_llmfront', (req, res) => {
-        console.log(req.body);
 
         // 音声ファイルのパス
         const audioPath = path.join(__dirname, 'audio.wav');

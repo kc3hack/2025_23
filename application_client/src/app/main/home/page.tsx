@@ -79,7 +79,6 @@ export default function Home() {
         localStorage.setItem("history", JSON.stringify(newItems));
         setHistory(newItems);
 
-        console.log(newItems);
         setHistory(prevHistory => [...prevHistory, ...newItems]);
     };*/
 
@@ -88,7 +87,6 @@ export default function Home() {
 
         const updatedHistory = [...responseHistory, newMessage];
         setHistory(updatedHistory);
-        console.log("ok");
 
         localStorage.setItem("history", JSON.stringify(updatedHistory));
     };
@@ -98,7 +96,6 @@ export default function Home() {
     const handleMakeSession_uuid = () => {
         //sess_uuidの定義
         const inputId: string = makesession_uuid();
-        console.log(inputId);
         setSessionUUID(inputId);
     }
 
@@ -108,7 +105,6 @@ export default function Home() {
     //testarea変更の関数
     const handleChangeText = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setText(e.target.value);
-        console.log(text);
     }
 
     //api関連の関数
@@ -147,18 +143,12 @@ export default function Home() {
                 {withCredentials: true});
 
             if (response.status === 200) {
-                console.log(response);
-
-                //返ってきた値の設定
-                console.log("submit_for_llmfront:success");
 
                 const { text, audioData } = response.data;
 
                 //dataを受け取った後の処理
                 //text
                 handleHistoryAdd({content:text,type:"ai"});
-                console.log(localStorage.getItem("history"));
-                console.log(history);
 
                 const audioBuffer = new Uint8Array(Buffer.from(audioData, 'base64'));
                 const audioBlob = new Blob([audioBuffer], { type: 'audio/wav' });
@@ -168,14 +158,9 @@ export default function Home() {
 
                 // 音声再生
                 await audio.play();
-                console.log("Audio playing...");
 
-            } else {
-                console.log(response);
-                console.log("submit_for_llmfront:error1");
             }
         } catch {
-            console.log("submit_for_llmfront:error2");
         }finally {
             limitRef.current = false; //
         }
@@ -186,14 +171,11 @@ export default function Home() {
     const handleHistoryGet = async () => {
         try {
             const responseData = await axios.get(path + "/postgres", { withCredentials: true });
-            console.log(responseData);
 
             const responseHistory = responseData.data; // 配列が返っているか確認
-            console.log(responseHistory);
 
             localStorage.clear();
             localStorage.setItem("history", JSON.stringify(responseHistory));
-            console.log("a",localStorage.getItem("history"));
             setHistory(responseHistory);
         } catch (error) {
             console.error("Error fetching history:", error);
@@ -219,7 +201,6 @@ export default function Home() {
         handleHistoryGet();
         delayedFunction();
 
-        console.log("b",localStorage.getItem("history"));
     }, []);
 
 

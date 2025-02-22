@@ -35,7 +35,6 @@ connection.connect(error => {
         console.error('Database connection failed:', error.stack);
         return;
     }
-    console.log('Connected to database.');
 });
 
 const query = (text, params) => {
@@ -49,7 +48,6 @@ app.get('/', (req, res) => {
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
 });
 
 app.use(cors({
@@ -86,7 +84,6 @@ const isAuthenticated = (req, res, next) => {
 //login
 app.post('/login', (req, res) => {
     const {User_name, pwd} = req.body;
-    //console.log(1);
     connection.query(
         'SELECT * FROM User WHERE User_name = ?',
         [User_name],
@@ -108,11 +105,9 @@ app.post('/login', (req, res) => {
                         return res.status(500).json({message: 'Internal server error'});
                     }
                     if (isMatch) {
-                        console.log("ok");
                         req.session.userId = results[0].id;
                         req.session.User_name = results[0].User_name;
                         req.session.character_id = results[0].character_id;
-                        console.log(req.session);
 
                         res.json({message: 'Login successful'});
                     } else {
@@ -135,7 +130,6 @@ app.post('/logout', (req, res) => {
         }
 
         res.clearCookie('backend_session');
-        console.log("logout", req.session);
         res.json({message: 'Logout successful'});
     });
 });
@@ -144,13 +138,11 @@ app.post('/logout', (req, res) => {
 app.post('/signup', (req, res) => {
     const {User_name, pwd, nickname, character_id} = req.body;
 
-    //console.log(1);
 
     if (!User_name || !pwd || !nickname) {
         return res.status(400).json({error: 'Missing required fields'});
     }
 
-    //console.log(req.body);
 
     bcrypt.hash(pwd, 10, (err, hash) => {
         if (err) {
@@ -170,7 +162,6 @@ app.post('/signup', (req, res) => {
                     console.error('Error inserting data:', error);
                     return res.status(500).json({error: 'Server error'});
                 }
-                //console.log(1);
                 res.json({
                     data: result,
                     message: 'Login successful'
@@ -181,13 +172,10 @@ app.post('/signup', (req, res) => {
 });
 
 app.put('/character_id_put', isAuthenticated, (req, res) => {
-    console.log(req.session);
 
     const {User_name} = req.session;
     const {character_id} = req.body;
 
-    console.log('User_name:', User_name);
-    console.log('character_id:', character_id);
 
     connection.query(
         'UPDATE User set character_id=? WHERE User_name = ?',
@@ -207,8 +195,6 @@ app.put('/character_id_put', isAuthenticated, (req, res) => {
 
 app.get('/character_id_get', isAuthenticated, (req, res) => {
     const {User_name} = req.session;
-    console.log(req.session);
-    console.log("get", User_name);
     connection.query(
         'SELECT * FROM User WHERE User_name = ?',
         [User_name],
@@ -217,11 +203,9 @@ app.get('/character_id_get', isAuthenticated, (req, res) => {
                 console.error('Error inserting data:', error);
             }
             if (results) {
-                //console.log("ok");
                 const character_id = results[0].character_id;
                 const nickname = results[0].nickname;
                 const id = results[0].id;
-                console.log(results);
                 return res.status(200).json({
                     message: 'Successful',
                     data: {
@@ -272,7 +256,6 @@ app.get("/postgres",(req, res) => {
         const objectTypeData=result.rows.map(row => row.message_data);
         //const objectTypeData=newItems;
         res.json(objectTypeData);
-        console.log(objectTypeData);
 });
 
 
@@ -281,5 +264,4 @@ app.get("/postgres",(req, res) => {
 //test_post_for_llmfront(app);
 /*
 app.post('/test/post_for_llmfront',(req,res)=>{
-    console.log(req.body);
 })*/

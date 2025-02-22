@@ -25,18 +25,15 @@ export default function New() {
 
     const handleChangePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
         setPassword(e.target.value);
-        console.log(password);
     }
 
 
     const handleChangeUsername = (e: React.ChangeEvent<HTMLInputElement>) => {
         setUsername(e.target.value);
-        console.log(username);
     }
 
     const handleChangeNickname = (e: React.ChangeEvent<HTMLInputElement>) => {
         setNickname(e.target.value);
-        console.log(username);
     }
 
 
@@ -50,7 +47,7 @@ export default function New() {
     const handleSubmit = async () => {
 
         if (!username || !password || !nickname) {
-            console.log("signupに失敗しました。")
+            setError("すべてのフォームを入力してください")
             return;
         }
 
@@ -58,12 +55,8 @@ export default function New() {
             const submitData = { User_name: username, pwd: password , nickname:nickname ,character_id:0};
 
             const response = await axios.post(path+'/signup', submitData,{withCredentials: true});
-            console.log('登録成功:', response.data);
             if (response.data && response.data.message === 'Login successful') {
-                console.log('ログイン成功:', response.data);
                 handleRouting();
-            } else {
-                console.log("loginに失敗しました");
             }
         } catch (err) {
             console.error('Error:', err);
