@@ -1,7 +1,11 @@
+
 var express = require('express');
 var app = express();
 require('dotenv').config();
 const mysql = require('mysql2');
+const { Pool } = require("pg");
+
+
 const cors = require('cors');
 const session = require('express-session');
 const bcrypt = require('bcrypt');
@@ -15,6 +19,17 @@ const connection = mysql.createConnection({
     database: process.env.DB_NAME
 });
 
+//postgre
+const pool = new Pool({
+    host: process.env.PG_HOST,
+    user: process.env.PG_USER,
+    password: process.env.PG_PASSWORD,
+    database: process.env.PG_DATABASE,
+    port: Number(process.env.PG_PORT),
+});
+
+
+
 connection.connect(error => {
     if (error) {
         console.error('Database connection failed:', error.stack);
@@ -22,6 +37,10 @@ connection.connect(error => {
     }
     console.log('Connected to database.');
 });
+
+const query = (text, params) => {
+    return pool.query(text, params);
+};
 
 
 app.get('/', (req, res) => {
@@ -209,6 +228,34 @@ app.get('/character_id_get', isAuthenticated, (req, res) => {
         }
     )
 })
+
+//postgres
+
+
+app.get("/postgres", async (req, res) => {
+    const { UserId } = req.session || 1;
+
+    try {
+        const result = await query(
+            `SELECT 
+                message->'data'->>'type' AS type,
+                message->'data'->>'content' AS content
+            FROM chat_history_0 
+            WHERE message->'data'->>'id' = $1
+            ORDER BY created_at DESC
+            LIMIT 30`,
+            [UserId]
+        );
+
+        const objectTypeData=result.rows.map(row => row.message_data);
+        res.json(objectTypeData);
+
+    } catch (error) {
+        console.error("Database error:", error);
+        res.status(500).json({ error: "Database error" });
+    }
+});
+
 
 
 //ここからtest

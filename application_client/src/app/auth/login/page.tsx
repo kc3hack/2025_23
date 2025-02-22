@@ -1,18 +1,14 @@
 'use client';
 
-import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import './style.scss';
-import type { LoginIdType } from "@/type/loginIdType";
 import logo from "@/public/logo.png"
 import Image from "next/image";
 import { useAtom } from 'jotai';
 import {nicknameAtom, passwordAtom} from "@/global/auth/jotai";
 import {usernameAtom} from "@/global/auth/jotai";
-import  {Character_idAtom} from "@/global/favorite/jotai";
 import axios from "axios";
 import {useRouter} from "next/navigation";
-
 import path from "@/api/dbserver_endpoint_path";
 
 
