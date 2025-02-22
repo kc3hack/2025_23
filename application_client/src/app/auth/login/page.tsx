@@ -5,7 +5,7 @@ import './style.scss';
 import logo from "@/public/logo.png"
 import Image from "next/image";
 import { useAtom } from 'jotai';
-import {nicknameAtom, passwordAtom} from "@/global/auth/jotai";
+import {passwordAtom} from "@/global/auth/jotai";
 import {usernameAtom} from "@/global/auth/jotai";
 import axios from "axios";
 import {useRouter} from "next/navigation";
