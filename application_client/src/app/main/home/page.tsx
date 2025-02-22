@@ -26,8 +26,8 @@ import path from "@/api/dbserver_endpoint_path";
 import makesession_uuid from "@/function/makesession_uuid";
 
 //llm front接続におけるtest-path/deploy-path
-//import llm_front_apiendpoint_path from "@/api/llm_front_apiendpoint_path";
-import local_test_path from "@/api/test/local_test_path";
+import llm_front_apiendpoint_path from "@/api/llm_front_apiendpoint_path";
+//import local_test_path from "@/api/test/local_test_path";
 
 export default function Home() {
 
@@ -128,7 +128,7 @@ export default function Home() {
                 session_uuid: session_uuid,
             };
 
-            const response = await axios.post(local_test_path, submitData,
+            const response = await axios.post(llm_front_apiendpoint_path, submitData,
                 {withCredentials: true});
 
             if (response.status === 200) {

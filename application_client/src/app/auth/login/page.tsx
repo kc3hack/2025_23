@@ -10,7 +10,7 @@ import {usernameAtom} from "@/global/auth/jotai";
 import axios from "axios";
 import {useRouter} from "next/navigation";
 import path from "@/api/dbserver_endpoint_path";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 
 
 
@@ -62,6 +62,10 @@ export default function Login() {
             setError("ユーザ名かパスワードが間違っています");
         }
     };
+
+    useEffect(() => {
+        localStorage.clear();
+    }, []);
 
 
     return (
