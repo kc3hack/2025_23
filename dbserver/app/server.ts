@@ -3,7 +3,7 @@ var express = require('express');
 var app = express();
 require('dotenv').config();
 const mysql = require('mysql2');
-const { Pool } = require("pg");
+//const { Pool } = require("pg");
 
 
 const cors = require('cors');
@@ -20,13 +20,13 @@ const connection = mysql.createConnection({
 });
 
 //postgre
-const pool = new Pool({
+/*const pool = new Pool({
     host: process.env.PG_HOST,
     user: process.env.PG_USER,
     password: process.env.PG_PASSWORD,
     database: process.env.PG_DATABASE,
     port: Number(process.env.PG_PORT),
-});
+});*/
 
 
 
@@ -95,6 +95,9 @@ app.post('/login', (req, res) => {
                 console.error(error);
                 return res.status(500).json({message: 'Internal server error'});
             }
+            if (results.length === 0) {
+                return res.status(404).json({ error: 'User not found' });
+            }
 
             if (results.length > 0) {
                 const hashedPassword = results[0].pwd;
@@ -104,7 +107,6 @@ app.post('/login', (req, res) => {
                         console.error(err);
                         return res.status(500).json({message: 'Internal server error'});
                     }
-
                     if (isMatch) {
                         console.log("ok");
                         req.session.userId = results[0].id;
@@ -161,6 +163,10 @@ app.post('/signup', (req, res) => {
             [User_name, hash, nickname],
             (error, result) => {
                 if (error) {
+
+                    if (error.code === 'ER_DUP_ENTRY') {
+                        return res.status(409).json({ error: 'User_name already exists' });
+                    }
                     console.error('Error inserting data:', error);
                     return res.status(500).json({error: 'Server error'});
                 }
@@ -231,12 +237,25 @@ app.get('/character_id_get', isAuthenticated, (req, res) => {
 
 //postgres
 
+//test
+const newItems = [
+    { content: "今日何してたの？", type: "human" },
+    { content: "お仕事してたよ〜！〇〇くんは？", type: "ai" },
+    { content: "俺はちょっとゲームしてた！", type: "human" },
+    { content: "いいな〜！どんなゲーム？", type: "ai" },
+    { content: "RPG系のやつ！ストーリーがめっちゃ面白い！", type: "human" },
+    { content: "そうなんだ！今度一緒にやってみたいな♡", type: "ai" },
+    { content: "それいいね！今度一緒にやろう！", type: "human" },
+    { content: "約束だよ？指切り〜♪", type: "ai" },
+    { content: "指切りげんまん！", type: "human" },
+    { content: "破ったら…罰ゲームだよ？(笑)", type: "ai" },
+];
 
-app.get("/postgres", async (req, res) => {
+
+app.get("/postgres",(req, res) => {
     const { UserId } = req.session || 1;
 
-    try {
-        const result = await query(
+        /*const result = query(
             `SELECT 
                 message->'data'->>'type' AS type,
                 message->'data'->>'content' AS content
@@ -245,15 +264,12 @@ app.get("/postgres", async (req, res) => {
             ORDER BY created_at DESC
             LIMIT 30`,
             [UserId]
-        );
+        );*/
 
-        const objectTypeData=result.rows.map(row => row.message_data);
+        //const objectTypeData=result.rows.map(row => row.message_data);
+        const objectTypeData=newItems;
         res.json(objectTypeData);
-
-    } catch (error) {
-        console.error("Database error:", error);
-        res.status(500).json({ error: "Database error" });
-    }
+        console.log(objectTypeData);
 });
 
 

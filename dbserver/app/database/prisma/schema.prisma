@@ -10,7 +10,7 @@ datasource db {
 
 model User {
   id           Int    @id @default(autoincrement())
-  User_name    String
+  User_name    String @unique
   pwd          String
   character_id String
   nickname     String

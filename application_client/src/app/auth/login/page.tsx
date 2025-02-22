@@ -10,6 +10,7 @@ import {usernameAtom} from "@/global/auth/jotai";
 import axios from "axios";
 import {useRouter} from "next/navigation";
 import path from "@/api/dbserver_endpoint_path";
+import {useState} from "react";
 
 
 
@@ -18,13 +19,15 @@ export default function Login() {
     const [username, setUsername] = useAtom(usernameAtom);
     const [password, setPassword] = useAtom(passwordAtom);
 
-    const handleChangePassword = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const [error,setError]=useState("");
+
+    const handleChangePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
         setPassword(e.target.value);
         console.log(password);
     }
 
 
-    const handleChangeUsername = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const handleChangeUsername = (e: React.ChangeEvent<HTMLInputElement>) => {
         setUsername(e.target.value);
         console.log(username);
     }
@@ -56,7 +59,7 @@ export default function Login() {
                 console.log("loginに失敗しました");
             }
         } catch {
-            console.log('ログインに失敗しました。');
+            setError("ユーザ名かパスワードが間違っています");
         }
     };
 
@@ -69,19 +72,21 @@ export default function Login() {
                 <p>Sign In</p>
             </div>
             <div className="main">
-                <textarea
+                <input
                     className="up"
                     value={username}
                     onChange={handleChangeUsername}
                     placeholder="Enter username"
                 />
 
-                <textarea
+                <input
                     className="down"
+                    type="password"
                     value={password}
                     onChange={handleChangePassword}
                     placeholder="Password"
                 />
+                <p>{error}</p>
 
                 <button onClick={handleSubmit}>Sign In</button>
 

@@ -31,12 +31,10 @@ import local_test_path from "@/api/test/local_test_path";
 
 export default function Home() {
 
-    const lastMessageRef = useRef<HTMLDivElement | null>(null);
 
     const [name, setName] = useState("");
     const [sentence, setSentence] = useState("");
     const [image, setImage] = useState(imagego);
-    const [speaking, setSpeaking] = useState("");
 
     const [characterId, setCharacterId] = useAtom(Character_idAtom);
     const [nickname, setNickname] = useState("");
@@ -50,7 +48,7 @@ export default function Home() {
     }]);
 
     //test
-    const addTenHistoryItems = () => {
+    /*const addTenHistoryItems = () => {
         const newItems = [
             { content: "今日何してたの？", type: "human" },
             { content: "お仕事してたよ〜！〇〇くんは？", type: "ai" },
@@ -69,13 +67,14 @@ export default function Home() {
 
         console.log(newItems);
         setHistory(prevHistory => [...prevHistory, ...newItems]);
-    };
+    };*/
 
-    const handleHistoryAdd = (newMessage: { content: string; type: string }) => {
-        const responseHistory = JSON.parse(localStorage.getItem("history") || "[]");
+    const handleHistoryAdd = async (newMessage: { content: string; type: string }) => {
+        const responseHistory = await JSON.parse(localStorage.getItem("history") || "[]");
 
         const updatedHistory = [...responseHistory, newMessage];
         setHistory(updatedHistory);
+        console.log("ok");
 
         localStorage.setItem("history", JSON.stringify(updatedHistory));
     };
@@ -111,9 +110,14 @@ export default function Home() {
         setNickname(response_nickname);
     }
 
+    const limitRef = useRef(false);
 
     //llm-frontへのデータをおくる関数、下のbuttonのOnclickでsubmit
     const handleSubmit_for_llmfront = async () => {
+
+        if (limitRef.current) return; // すでに実行中なら何もしない
+        limitRef.current = true; // 実行フラグを立てる
+        handleHistoryAdd({content:text,type:"human"});
 
         try {
             const submitData = {
@@ -137,7 +141,9 @@ export default function Home() {
 
                 //dataを受け取った後の処理
                 //text
-                setSpeaking(text);
+                handleHistoryAdd({content:text,type:"ai"});
+                console.log(localStorage.getItem("history"));
+                console.log(history);
 
                 const audioBuffer = new Uint8Array(Buffer.from(audioData, 'base64'));
                 const audioBlob = new Blob([audioBuffer], { type: 'audio/wav' });
@@ -155,12 +161,14 @@ export default function Home() {
             }
         } catch {
             console.log("submit_for_llmfront:error2");
+        }finally {
+            limitRef.current = false; // 実行完了後にリセット
         }
     };
 
     //posgreからのデータの受け取り
 
-    /*const handleHistoryGet = async () => {
+    const handleHistoryGet = async () => {
         try {
             const responseData = await axios.get(path + "/postgres", { withCredentials: true });
             console.log(responseData);
@@ -168,12 +176,14 @@ export default function Home() {
             const responseHistory = responseData.data; // 配列が返っているか確認
             console.log(responseHistory);
 
+            localStorage.clear();
             localStorage.setItem("history", JSON.stringify(responseHistory));
+            console.log("a",localStorage.getItem("history"));
             setHistory(responseHistory);
         } catch (error) {
             console.error("Error fetching history:", error);
         }
-    };*/
+    };
 
 
 
@@ -187,20 +197,14 @@ export default function Home() {
     };
 
     useEffect(() => {
-        addTenHistoryItems();
+        //addTenHistoryItems(); test
         recieveData();
         handleMakeSession_uuid();
+        handleHistoryGet();
         delayedFunction();
-        //handleHistoryGet();
+
+        console.log("b",localStorage.getItem("history"));
     }, []);
-
-    useEffect(() => {
-        if (lastMessageRef.current) {
-            lastMessageRef.current.scrollIntoView({ behavior: "smooth" });
-        }
-
-        handleHistoryAdd({ content: speaking, type: "ai" });
-    }, [speaking]);
 
 
     useEffect(() => {

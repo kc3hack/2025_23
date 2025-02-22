@@ -48,6 +48,17 @@
       }
     }
 
+    input{
+      resize: none;
+
+      padding: 0.5rem;
+      margin: 1.0rem;
+      width: 70%;
+      &:focus{
+        outline:none;
+      }
+    }
+
     button{
       padding: 0.9rem;
       margin: 1.7rem;
