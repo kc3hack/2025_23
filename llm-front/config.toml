@@ -1,0 +1,12 @@
+# config.toml
+[characters.CharacterA]
+llm_front_id = 1
+chat_id = 3
+voice_id = 4
+
+[characters.CharacterB]
+llm_front_id = 2
+chat_id = 5
+voice_id = 6
+
+# Add more characters as needed
