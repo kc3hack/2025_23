@@ -235,7 +235,10 @@ app.get('/character_id_get', isAuthenticated, (req, res) => {
     )
 })
 
-//postgres
+
+
+
+//postgres//////////////////////////////////////////////////////////////////////////////////////////////////
 
 //test
 const newItems = [
@@ -253,7 +256,7 @@ const newItems = [
 
 
 app.get("/postgres",(req, res) => {
-    const { UserId } = req.session || 1;
+    const { UserId } = req.session;
 
         /*const result = query(
             `SELECT 
