@@ -1,5 +1,4 @@
 import sys
-import asyncio
 
 from langchain.schema.output_parser import StrOutputParser
 from langchain_community.vectorstores import PGVector
@@ -7,7 +6,7 @@ from langchain_core.messages import AIMessage, HumanMessage
 from langchain_postgres import PostgresChatMessageHistory
 
 from llm_next.db import DATABASE_URL
-from llm_next.prompt import next_gen_prompts, emotional_analyzer_prompt
+from llm_next.prompt import emotional_analyzer_prompt, next_gen_prompts
 
 
 db_dict = {}
@@ -18,7 +17,7 @@ output_parser = StrOutputParser()
 async def update_sentimental(user_input :str, user_id: int, character_id: int, llm):
     try:
         emotion_score = int(await analyze_emotion(user_input, llm))
-    except Exception as E:
+    except Exception:
         return
     if str(user_id) not in emotion_dict:
         emotion_dict[str(user_id)] = {}
@@ -34,9 +33,9 @@ async def update_sentimental(user_input :str, user_id: int, character_id: int, l
         print(f"感情値範囲外: {emotion_score}")
 
 def get_emotion(user_id: int, character_id: int):
-    if not str(user_id) in emotion_dict:
+    if str(user_id) not in emotion_dict:
         return 0
-    if not str(character_id) in emotion_dict[str(user_id)]:
+    if str(character_id) not in emotion_dict[str(user_id)]:
         return 0
     return sum(emotion_dict[str(user_id)][str(character_id)]) / len(emotion_dict[str(user_id)][str(character_id)])
 

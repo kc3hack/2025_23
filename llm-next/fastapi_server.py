@@ -1,6 +1,6 @@
+import asyncio
 import sys
 import uuid
-import asyncio
 from typing import Optional
 
 import uvicorn
