@@ -1,4 +1,5 @@
 next_gen_prompt3 = ChatPromptTemplate.from_template(
+"""
 以下のプロンプトに従って今から私（ユーザー）と会話してください。
 
 キャラクター設定
