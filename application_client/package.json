@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@splidejs/splide": "^4.1.4",
+    "@types/uuid": "^10.0.0",
     "axios": "^1.7.9",
     "formidable": "^3.5.2",
     "jotai": "^2.11.3",
@@ -20,7 +21,8 @@
     "recoil": "^0.7.7",
     "sass": "^1.84.0",
     "scss": "^0.2.4",
-    "splide-nextjs": "^2.4.23"
+    "splide-nextjs": "^2.4.23",
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
