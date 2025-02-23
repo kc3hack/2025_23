@@ -58,6 +58,7 @@ line-ending = "lf"
 [tool.ruff.lint]
 extend-select = ["I", "W292"]
 select = ["E", "F"]
+ignore = [ "E501" ]
 
 [tool.ruff.lint.isort]
 lines-after-imports = 2
