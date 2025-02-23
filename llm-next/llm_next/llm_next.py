@@ -34,7 +34,7 @@ def main() -> None:
             break
         try:
             response = chat_with_history(
-                user_input, session_id, session_uuid, embeddings, llm, conn
+                user_input, session_id, session_uuid, 1, "ichigoyp", embeddings, llm, conn
             )
             print(f"回答: {response}")
         except Exception as e:

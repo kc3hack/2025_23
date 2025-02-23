@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Query, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 
-from llm_next.chat import chat_with_history
+from llm_next.chat import analyze_sentiment, chat_with_history
 from llm_next.db import close_connection, init_database
 from llm_next.embeddings import init_embeddings
 from llm_next.llm import init_llm
@@ -55,12 +55,33 @@ async def chat_endpoint(
 
     if not session_uuid:
         session_uuid = str(uuid.uuid4())
+    if not character_id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="character_id is required"
+        )
+    if not user_id:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="user_id is required")
+    if not user_name:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="user_name is required")
 
     try:
         print(user_input)
         # データベース接続を取得 (リクエストごとに取得)
-        response = chat_with_history(user_input, user_id, session_uuid, embeddings, llm, conn)
+        response = chat_with_history(user_input, user_id, session_uuid, character_id, user_name, embeddings, llm, conn)
         return {"response": response}  # 辞書形式でレスポンスを返す
+    except Exception as e:
+        print(f"Error raised: {e}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+
+@app.api_route("/mentor", methods=["GET", "POST"])
+async def mentor_endpoint(
+    request: Request,
+    user_input: str = Query(..., description="ユーザー入力"),
+):
+    try:
+        response = analyze_sentiment(user_input, llm)
+        return {"response": response}
     except Exception as e:
         print(f"Error raised: {e}")
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
