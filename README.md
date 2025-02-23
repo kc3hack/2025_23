@@ -54,9 +54,14 @@
 
 ## 使用技術
 <!-- 使用技術を入力してください -->
-Next.js <br>
-rust(rocket) js(express) python(rang chain)<br>
-nginx psql msql cloudflare
+Next.js<br>
+Rust with Rocket<br>
+JavaScript with Express <br>
+Python with LangChain<br>
+Nginx<br>
+PostgreSQL <br>
+MySQL<br>
+Cloudflare<br>
 <!--
 markdownの記法はこちらを参照してください！
 https://docs.github.com/ja/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax
