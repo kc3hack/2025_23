@@ -144,13 +144,13 @@ export default function Home() {
 
             if (response.status === 200) {
 
-                const { text, audioData } = response.data;
+                const { text, audio_data } = response.data;
 
                 //dataを受け取った後の処理
                 //text
                 handleHistoryAdd({content:text,type:"ai"});
 
-                const audioBuffer = new Uint8Array(Buffer.from(audioData, 'base64'));
+                const audioBuffer = new Uint8Array(Buffer.from(audio_data, 'base64'));
                 const audioBlob = new Blob([audioBuffer], { type: 'audio/wav' });
                 const audioUrl = URL.createObjectURL(audioBlob);
                 const audio = new Audio(audioUrl);
