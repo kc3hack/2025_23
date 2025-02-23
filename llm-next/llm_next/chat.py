@@ -88,6 +88,7 @@ def chat_with_history(query: str, user_id: str, session_uuid: str, character_id:
         "context": ctx, 
         "recent": recent, 
         "user_input": query, 
+        "user_name": user_name,
         "emotion_score": emotion
     })
     # ユーザの発言をベクトル化してDBに保存
