@@ -11,7 +11,7 @@ use toml;
 #[derive(Debug, Deserialize, Serialize)]
 struct LlmFrontRequest {
     user_input: String,
-    character_id: String,
+    character_id: u64,
     user_id: u64,
     user_name: String,
     session_uuid: String,
@@ -48,12 +48,18 @@ async fn llm_front(
     request: Json<LlmFrontRequest>,
     config: &State<Config>,
 ) -> Result<Json<ResponseData>, Status> {
-    let character_name = request.character_id.clone();
+    let character_id = request.character_id.clone();
 
+    //let character_config = config
+    //    .characters
+    //    .get(&character_name)
+    //    .ok_or(Status::BadRequest)?;
     let character_config = config
         .characters
-        .get(&character_name)
+        .values()
+        .find(|&character| character.llm_front_id == character_id)
         .ok_or(Status::BadRequest)?;
+
 
     let chat_url = format!(
         "http://127.0.0.1:7297/chat?user_input={}&session_uuid={}&character_id={}",
@@ -65,8 +71,9 @@ async fn llm_front(
         .json::<ChatResponse>()
         .await
         .map_err(|_| Status::InternalServerError)?;
+    println!("chat_response: {:#?}", chat_response.response);
 
-    let voice_url = format!("http://192.168.0.8:59760/voice?text={}&encoding=utf-8&model_id={}&speaker_id=0&sdp_ratio=0.2&noise=0.6&noisew=0.8&length=1&language=JP&auto_split=true&split_interval=0.5&assist_text_weight=1&style=Neutral&style_weight=5",
+    let voice_url = format!("http://127.0.0.1:5000/voice?text={}&encoding=utf-8&model_id={}&speaker_id=0&sdp_ratio=0.2&noise=0.6&noisew=0.8&length=1&language=JP&auto_split=true&split_interval=0.5&assist_text_weight=1&style=Neutral&style_weight=5",
                            chat_response.response, character_config.voice_id);
 
     let voice_response = reqwest::get(voice_url)
@@ -101,6 +108,7 @@ async fn llm_front(
 fn rocket() -> _ {
     let config_string = fs::read_to_string("config.toml").expect("Failed to read config file");
     let config: Config = toml::from_str(&config_string).expect("Failed to parse config file");
+    println!("#Parsed TOML:\n{:#?}", config);
 
     rocket::build()
         .mount("/", routes![llm_front])
