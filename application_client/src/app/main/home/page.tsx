@@ -92,10 +92,10 @@ export default function Home() {
     };
 
     //sess_uuidの定義
-    const [session_uuid, setSessionUUID] = useState("test");
+    const [session_uuid, setSessionUUID] = useState("");
     const handleMakeSession_uuid = () => {
         //sess_uuidの定義
-        const inputId: string = makesession_uuid();
+        const inputId:　string = makesession_uuid();
         setSessionUUID(inputId);
     }
 
