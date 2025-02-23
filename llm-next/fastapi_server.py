@@ -1,5 +1,6 @@
 import sys
 import uuid
+import asyncio
 from typing import Optional
 
 import uvicorn
@@ -7,27 +8,18 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Query, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 
-from llm_next.chat import analyze_sentiment, chat_with_history
+from llm_next.chat import analyze_emotion, chat_with_history, update_sentimental
 from llm_next.db import close_connection, init_database
 from llm_next.embeddings import init_embeddings
 from llm_next.llm import init_llm
 
 
 load_dotenv()
-
-# データベースの初期化 (グローバルスコープで行う)
 conn = init_database()
-
-# Embeddingsモデルの初期化 (グローバルスコープで行う)
 embeddings = init_embeddings(local=False)
-
-# LLMの初期化 (グローバルスコープで行う)
 llm = init_llm(local=False)
-
 app = FastAPI()
-
-# CORS設定 (必要に応じて)
-allow_origins = ["*"]  # or specific origins
+allow_origins = ["*"]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allow_origins,
@@ -35,7 +27,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 
 @app.api_route("/chat", methods=["GET", "POST"])
 async def chat_endpoint(
@@ -69,9 +60,13 @@ async def chat_endpoint(
         print(user_input)
         # データベース接続を取得 (リクエストごとに取得)
         response = chat_with_history(user_input, user_id, session_uuid, character_id, user_name, embeddings, llm, conn)
+        try:
+            asyncio.create_task(update_sentimental(user_input, user_id, character_id, llm))
+        except Exception as e:
+            print(f"Error raised in chat_endpoint creating_task: {e}")
         return {"response": response}  # 辞書形式でレスポンスを返す
     except Exception as e:
-        print(f"Error raised: {e}")
+        print(f"Error raised in chat_endpoint while response: {e}")
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
 @app.api_route("/mentor", methods=["GET", "POST"])
@@ -80,7 +75,7 @@ async def mentor_endpoint(
     user_input: str = Query(..., description="ユーザー入力"),
 ):
     try:
-        response = analyze_sentiment(user_input, llm)
+        response = await analyze_emotion(user_input, llm)
         return {"response": response}
     except Exception as e:
         print(f"Error raised: {e}")
@@ -97,3 +92,4 @@ if __name__ == "__main__":
     # コマンドライン引数からポート番号を取得 (オプション)
     port = int(sys.argv[1]) if len(sys.argv) > 1 else 8000
     uvicorn.run(app, host="0.0.0.0", port=port)
+
