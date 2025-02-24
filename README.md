@@ -66,3 +66,11 @@ Cloudflare<br>
 markdownの記法はこちらを参照してください！
 https://docs.github.com/ja/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax
 -->
+
+原神のモデルについて
+本プロジェクトには、『原神』を参考にしたモデルが含まれています。このモデルはファンメイドのものであり、HoYoverseとは一切関係ありません。
+
+『原神』の詳細については、公式サイトをご覧ください：
+[公式サイト](https://genshin.hoyoverse.com/pc-launcher/?new_pc=1&utm_source=JP_bing_JP_search_ymbing02&hoyotrace_channel=bing_channel&msclkid=47ea33f3b9141f5be8045448790f3d01#/)
+[作成したモデル](https://39.gigafile.nu/0301-l9c162919ae2c0c5839ccdfc6e54283ea)
+
